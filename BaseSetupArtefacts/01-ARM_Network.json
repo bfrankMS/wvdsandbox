@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "HostPoolSubnets": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "How many subnets like 'snet-HostPool1', 'snet-HostPool2', 'snet-HostPool3',... do you want to have? ''"
+            }
+        }
+    },
+    "variables": {
+        "ServiceShortName": "wvdsdbox",
+        "VNETName": "[concat(variables('ServiceShortName'),'-vnet')]",
+        "DCSubnet": "snet-DomainController",
+        "GatewaySubnet": "GatewaySubnet",
+        "FileServices": "snet-FileServices",
+        "HostPoolPrefix": "snet-HostPool"
+    },
+    "resources": [
+        {
+            "name": "[variables('VNETName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2018-08-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('VNETName')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('DCSubnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewaySubnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.254.0/24"
+                        }
+                    },
+                    {
+                        "name": "[variables('FileServices')]",
+                        "properties": {
+                            "addressPrefix": "10.0.253.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2019-09-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('VNETName'))]"
+            ],
+            "name": "[concat(variables('VNETName'), '/',concat(variables('HostPoolPrefix')), add(copyIndex('subnetcopy'),1))]",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "subnetcopy",
+                "mode": "Serial",
+                "count": "[parameters('HostPoolSubnets')]"
+            },
+            "properties": {
+                "addressPrefix": "[concat('10.0.',add(copyIndex('subnetcopy'),1),'.0/24')]"
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
