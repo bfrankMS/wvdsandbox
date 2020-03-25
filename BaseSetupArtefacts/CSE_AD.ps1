@@ -3,7 +3,7 @@
     [string] $DomainName,
 
     [Parameter(Mandatory=$True,Position=2)]
-    [securestring] $SecurePassword
+    [string] $Password
 )
 
 #this will be our temp folder - need it for download / logging
@@ -44,7 +44,7 @@ foreach ($RawDisk in $RawDisks)
 #-DatabasePath "e:\NTDS" -SysvolPath "e:\SYSVOL" -LogPath "e:\Logs"
 #Set the Host Cache Preference setting on the Azure data disk for NONE. This prevents issues with write caching for AD DS operations.
 
-#$SecurePassword = ConvertTo-SecureString "$Password" -AsPlainText -Force
+$SecurePassword = ConvertTo-SecureString "$Password" -AsPlainText -Force
 
 #Do we have Data Disk? 
 $DataDisk0 = Get-Volume -FileSystemLabel "Data0" -ErrorAction SilentlyContinue
