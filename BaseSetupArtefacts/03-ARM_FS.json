@@ -94,9 +94,6 @@
             "apiVersion": "2018-01-01",
             "name": "[variables('nsgName')]",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
-            ],
             "properties": {
                 "securityRules": [
                     {
