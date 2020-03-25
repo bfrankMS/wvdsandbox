@@ -47,7 +47,7 @@
     "variables": {
         "ServiceShortName": "wvdsdbox",
         "VNETName": "[concat(variables('ServiceShortName'),'-vnet')]",
-        "DCSubnet": "FileServices",
+        "DCSubnet": "snet-FileServices",
         "storageAccountName": "[concat('fsdiag',substring(guid(resourceGroup().id),0,4))]",
         "vmNicName": "[concat(parameters('vmName'),'-NIC1')]",
         "vmPIPName": "[concat(parameters('vmName'),'-PIP')]",

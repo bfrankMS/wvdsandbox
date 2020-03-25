@@ -92,8 +92,14 @@ Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParame
 
 The deployment will take some time (20mins?) - please be patient. The result should look similar to this:  
 ![AD Deployment Result](ADDeploymentResult.png)  
+
+## 3. Make the created DC the DNS Server of the VNET  
+**This is very important**: The fileserver and the host Pool VMs (aka 'Session Hosts') **will join the previously created domain**.  
+In order **to find the DC** we'll have to make sure the **DC's IP is listed in the VNETs DNS Servers**.:  
+![DC is VNETs DNS Server](DCisVnetsDNSserver.PNG)  
   
-## 3. Create the File server.  
+
+## 4. Create the File server.  
 ```PowerShell
 # These are some parameters for the File Server deployment
 $templateParameterObject = @{
@@ -104,7 +110,7 @@ $templateParameterObject = @{
 'DiskSku' = [string] 'StandardSSD_LRS'
 'DomainName' = [string] 'contoso.local'
 }
-New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/03-ARM_FS.json' -TemplateParameterObject $templateParameterObject
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'FileServerSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/03-ARM_FS.json' -TemplateParameterObject $templateParameterObject
 
 
 ```
