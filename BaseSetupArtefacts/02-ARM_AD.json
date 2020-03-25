@@ -43,7 +43,6 @@
             "type": "string",
             "defaultValue": "contoso.local"
         }
-
     },
     "variables": {
         "ServiceShortName": "wvdsdbox",
@@ -126,6 +125,9 @@
             "name": "[variables('vmNicName')]",
             "location": "[resourceGroup().location]",
             "apiVersion": "2018-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+            ],
             "properties": {
                 "ipConfigurations": [
                     {
@@ -140,7 +142,10 @@
                             "privateIPAddressVersion": "IPv4"
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+                }
             }
         },
         {
@@ -254,7 +259,8 @@
                 "publisher": "Microsoft.Compute",
                 "type": "CustomScriptExtension",
                 "typeHandlerVersion": "1.7",
-                "protectedSettings": {}
+                "protectedSettings": {
+                }
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"

@@ -60,8 +60,51 @@ foreach ($RGSuffix in $RGSuffixes)
 As result you should get something like:  
 ![Some Resource Groups](SomeRGs.PNG)
 
-## 2. Create the Network and Servers.
+## 2. Create the Network and Domain Controller.  
+The following script deploys the **network** and the **domain controller** into the the 'rg-wvdsdbox-basics' resource group.  
+Please **copy & paste this script into your Cloud Shell**:  
+
 ```PowerShell
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
+
+# These are some parameters for the dc deployment
+$templateParameterObject = @{
+'vmName' =  [string] 'wvdsdbox-AD-VM1'
+'adminUser'= [string] 'wvdadmin'
+'adminPassword' = [securestring]$(Read-Host -AsSecureString -Prompt "Please enter a password for the vm and domain admin.")
+'vmSize'=[string] 'Standard_F2s'
+'DiskSku' = [string] 'StandardSSD_LRS'
+'DomainName' = [string] 'contoso.local'
+}
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject
+
+#cleanup: remove 'DCInstall' extension
+Remove-AzVMCustomScriptExtension -Name 'DCInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force  
+
+#Do post AD installation steps: e.g. create OUs and some WVD Demo Users.
+Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -NoWait -Run 'CSE_AD_Post.ps1' -Argument "WVD $($templateParameterObject.adminPassword)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
+  
+#Cleanup
+Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
+
+```
+> **Note**: The **password** used above needs to be **complex enough** - pls see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) for details.
+
+The deployment will take some time (20mins?) - please be patient. The result should look similar to this:  
+![AD Deployment Result](ADDeploymentResult.png)  
+  
+## 3. Create the File server.  
+```PowerShell
+# These are some parameters for the File Server deployment
+$templateParameterObject = @{
+'vmName' =  [string] 'wvdsdbox-FS-VM1'
+'adminUser'= [string] 'wvdadmin'
+'adminPassword' = [securestring]$(Read-Host -AsSecureString -Prompt "Please enter a password for the vm and domain admin.")
+'vmSize'=[string] 'Standard_F2s'
+'DiskSku' = [string] 'StandardSSD_LRS'
+'DomainName' = [string] 'contoso.local'
+}
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/03-ARM_FS.json' -TemplateParameterObject $templateParameterObject
 
 
 ```

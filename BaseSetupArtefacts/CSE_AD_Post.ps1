@@ -18,17 +18,22 @@ Start-Transcript "$tmpDir\$($SCRIPT:MyInvocation.MyCommand).log"
 Import-Module ActiveDirectory
 $DomainPath = $((Get-ADDomain).DistinguishedName) # e.g."DC=contoso,DC=azure"
 
-#region add OU for 'VPNUsers'
+#region add OU for 'WVDUsers'
     "Creating OU:{0} in Domain:{1} on Server:{2}" -f $OUName,$DomainPath,$hostname
     New-ADOrganizationalUnit -Name:$OUName -Path:$DomainPath -ProtectedFromAccidentalDeletion:$true 
     Set-ADObject -Identity:"OU=$OUName,$DomainPath" -ProtectedFromAccidentalDeletion:$true 
+    
+    for ($i = 1; $i -le 10; $i++)
+    { 
+        New-ADOrganizationalUnit -Name:"HostPool$i" -Path:"OU=$OUName,$DomainPath" -ProtectedFromAccidentalDeletion:$true 
+    }
 #endregion 
 
-#region add Sec Group "VPN Users"
+#region add Sec Group "WVD Users"
     New-ADGroup -GroupCategory:"Security" -GroupScope:"Global" -Name:"WVD Users" -Path:"OU=$OUName,$DomainPath" -SamAccountName:"WVD Users" 
 #endregion
 
-#region create some VPN test users
+#region create some WVD test users
     $ADPath = "OU=$OUName,$DomainPath"
 
     for ($i = 1; $i -le 15; $i++)

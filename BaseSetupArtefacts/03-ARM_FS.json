@@ -38,8 +38,11 @@
             "metadata": {
                 "description": "Note: For 99.5% SLA for VMs you need to use Premium_LRS."
             }
+        },
+        "DomainName": {
+            "type": "string",
+            "defaultValue": "contoso.local"
         }
-
     },
     "variables": {
         "ServiceShortName": "wvdsdbox",
@@ -49,7 +52,8 @@
         "vmNicName": "[concat(parameters('vmName'),'-NIC1')]",
         "vmPIPName": "[concat(parameters('vmName'),'-PIP')]",
         "nsgName": "wvdsdbox-FS-nsg",
-        "availabilitySetName": "wvdsdbox-FS-avail"
+        "availabilitySetName": "wvdsdbox-FS-avail",
+        "existingDomainUPN":"[concat(parameters('adminUser'),'@',parameters('DomainName'))]"
     },
     "resources": [
         {
@@ -90,6 +94,9 @@
             "apiVersion": "2018-01-01",
             "name": "[variables('nsgName')]",
             "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+            ],
             "properties": {
                 "securityRules": [
                     {
@@ -139,7 +146,8 @@
             "location": "[resourceGroup().location]",
             "apiVersion": "2018-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', variables('vmPIPName'))]"
+                "[resourceId('Microsoft.Network/publicIPAddresses/', variables('vmPIPName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -158,7 +166,10 @@
                             "privateIPAddressVersion": "IPv4"
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+                }
             }
         },
         {
@@ -237,6 +248,31 @@
                         "enabled": true,
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
+                }
+            }
+        },
+        {
+            "apiVersion": "2018-10-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmName'), '/joindomain')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "name": "[parameters('DomainName')]",
+                    "ouPath": "",
+                    "user": "[variables('existingDomainUPN')]",
+                    "restart": "true",
+                    "options": "3"
+                },
+                "protectedSettings": {
+                    "password": "[parameters('adminPassword')]"
                 }
             }
         }
