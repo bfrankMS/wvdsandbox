@@ -53,7 +53,7 @@
         "vmPIPName": "[concat(parameters('vmName'),'-PIP')]",
         "nsgName": "wvdsdbox-FS-nsg",
         "availabilitySetName": "wvdsdbox-FS-avail",
-        "existingDomainUPN":"[concat(parameters('adminUser'),'@',parameters('DomainName'))]"
+        "existingDomainUPN": "[concat(parameters('adminUser'),'@',parameters('DomainName'))]"
     },
     "resources": [
         {
@@ -246,6 +246,21 @@
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
                 }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(parameters('vmName'), '/BGInfo')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+            ],
+            "properties": {
+                "autoUpgradeMinorVersion": true,
+                "publisher": "Microsoft.Compute",
+                "type": "BGInfo",
+                "typeHandlerVersion": "2.1"
             }
         },
         {
