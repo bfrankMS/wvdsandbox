@@ -59,3 +59,9 @@ foreach ($RGSuffix in $RGSuffixes)
 ```  
 As result you should get something like:  
 ![Some Resource Groups](SomeRGs.PNG)
+
+## 2. Create the Network and Servers.
+```PowerShell
+
+
+```

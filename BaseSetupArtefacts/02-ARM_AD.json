@@ -38,6 +38,10 @@
             "metadata": {
                 "description": "Note: For 99.5% SLA for VMs you need to use Premium_LRS."
             }
+        },
+        "DomainName": {
+            "type": "string",
+            "defaultValue": "contoso.local"
         }
 
     },
@@ -217,6 +221,44 @@
                     }
                 }
             }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(parameters('vmName'), '/BGInfo')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+            ],
+            "properties": {
+                "autoUpgradeMinorVersion": true,
+                "publisher": "Microsoft.Compute",
+                "type": "BGInfo",
+                "typeHandlerVersion": "2.1"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmName'), '/', 'DCInstall')]",
+            "apiVersion": "2018-06-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD.ps1"
+                    ],
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File CSE_AD.ps1 ',parameters('DomainName'), ' ',parameters('adminPassword'))]"
+                },
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.7",
+                "protectedSettings": {}
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+            ]
         }
     ],
     "outputs": {
