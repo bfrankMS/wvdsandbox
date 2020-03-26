@@ -1,3 +1,3 @@
-# Challenge 3: Create a Service Principal for WVD Administration
+# Challenge 3: Create a WVD Tenant
 
 [back](../README.md)

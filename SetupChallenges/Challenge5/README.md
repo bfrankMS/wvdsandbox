@@ -1,3 +1,3 @@
-# Challenge 5: Test from client
+# Challenge 5: Manage Application Group
 
 [back](../README.md)

@@ -8,7 +8,6 @@ Nevertheless exercising this repo hopefully gives insights why things are differ
 So ride at your own risk and please use your brain ;-)  
 
 ## The WVD Sandbox Demo Environment
-![Simple WVD Architecture](SimpleWVDArchitecture.png) 
 
 > **Note**: I don't follow strictly the naming conventions as proposed [here](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging) - The reason? I like to see what's linked together when using the Azure Portal view & sorting.  
   
@@ -23,7 +22,7 @@ The setup of WVD currently requires some things to be setup in order:
 ![WVD setup steps](WVDSetupSteps.PNG)
 
 ## Ready?
-Go here for next steps (i.e. ordered setup)
+[Go here for next steps](/SetupChallenges/README.md) (i.e. ordered setup)
 
 ## What the heck... 
 ...you may ask why do I:
