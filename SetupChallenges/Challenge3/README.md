@@ -5,8 +5,8 @@
 In the setup flow we are at position:  
 ![Setup Flow](SetupFlow3.png)  
   
-For WVD we require a WVD Tenant. Currently **the WVD tenant is not the same as an AAD Tenant**.  
-However **they are linked together**. So an WVD Tenant _belongs_ to an AAD.  
+For WVD we require a WVD Tenant. **The WVD tenant is not the same as an AAD Tenant**.  
+However **they are _linked_ together**. So an WVD Tenant _belongs_ to an AAD.  
 This challenge is about creating it and linking it together. The steps are done using PowerShell.  
   
 **Copy & paste the following code into an code editor (or _notepad_)**:  
@@ -32,7 +32,7 @@ New-RdsTenant -Name $tenantName -AadTenantId $aadTenantId -AzureSubscriptionId $
 |--|--|
 | $aadTenantId | `[Azure Portal] -> Azure Active Directory-> TenantID` ![Tenant ID](AADTenantID.PNG)   |
 | $azureSubscriptionId | `[Azure Portal] -> Subscriptions -> SubscriptionID` ![Tenant ID](SubscriptionID.PNG) |
-| $tenantName | _enter a useful name here_ e.g. Contoso 4711 Digital Workspace  |
+| $tenantName | _enter a useful name here_ e.g. Contoso 4711 |
 
 
 ## Run Code In PowerShell

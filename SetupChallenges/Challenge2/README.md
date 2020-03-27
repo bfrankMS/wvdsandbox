@@ -54,6 +54,6 @@ For [Challenge3](../Challenge3/README.md) **we need a user that is allowed to _c
 |--|--|
 | Hit **Assign users and groups** |  Click **Add user** and select e.g. **Administrator** for the **TenantCreator** role. **Assign**|  
 
-Congrats! you successfully registered the required apps. This has to be done only once (per AAD).  
+**Congrats! you successfully registered the required apps. This has to be done only once (per AAD).** 
   
 [back](../README.md)    
