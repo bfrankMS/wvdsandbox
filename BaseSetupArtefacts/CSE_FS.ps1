@@ -22,6 +22,14 @@ foreach ($download in $Downloads) {
     }
 }
 
+#toggle IE Enhanced Security Configuration for Admins
+$ieESCAdminPath = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
+$ieESCUserPath = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
+$ieESCAdminEnabled = (Get-ItemProperty -Path $ieESCAdminPath).IsInstalled
+$ieESCAdminEnabled = 0
+Set-ItemProperty -Path $ieESCAdminPath -Name IsInstalled -Value $ieESCAdminEnabled
+Set-ItemProperty -Path $ieESCUserPath -Name IsInstalled -Value $ieESCAdminEnabled
+
 #Do we find Data disks (raw by default) in this VM? 
 $RawDisks = Get-Disk | where PartitionStyle -eq "RAW"
 

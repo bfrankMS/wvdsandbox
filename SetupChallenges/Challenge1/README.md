@@ -2,9 +2,9 @@
 
 [back](../README.md)  
   
-In this challenge you'll implement hybrid identity by sync'ing your AD users to your Azure AD (AAD).  
+In this challenge you'll **implement hybrid identity by sync'ing your AD users to your Azure AD** (AAD).  
 So the final result of this exercise should look like:  
-![synced accounts from AD in your AAD](TBD.PNG)  
+![synced accounts from AD in your AAD](AAD-SyncedUsers.PNG)  
 
 ## 0. Choose the AAD you want to sync to (i.e. _destination_)  
 **Important**:
@@ -22,7 +22,7 @@ Take a look at the current sync status of your AAD:
 | <H3>Looks like this?</H3> | <H3>or like that?</H3> |
 |--|--|
 | ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| Good to go! | **This AAD is sync'ing already**. You'll probably want to **create a new AAD** for the WVD sandbox. Go [here](Subchallenge/CreateANewAAD.md) for the instructions. |
+| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to **create a new AAD** for the WVD sandbox. Go [here](Subchallenge/CreateANewAAD.md) for the instructions. |
 
 
 ## 1. Download and Install the AD Connect Tool.
@@ -32,11 +32,36 @@ Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP) ---RDP---> DC ('10.0.0.4')
 ```  
 On the DC you will find the AD Connect tool already downloaded: _"C:\temp\AzureADConnect.msi"_  
 **Doubleclick to install AD Connect.**  
-![On the DC install AD Connect](OnTheDC-InstallADConnect-0.png)
+
+| 1. | 2. | 3. |
+|--|--|--|
+| ![On the DC install AD Connect](OnTheDC-InstallADConnect-0.png) | ![Continue](OnTheDC-InstallADConnect-1.png)  | ![Use Express Settings](OnTheDC-InstallADConnect-2.png) |
+| On the DC install AD Connect | Hit **continue**  | **Use express settings** to speed things up.  |  
+
+> **Note**: It is **not recommended** to install AD Connect on a domain controller.
 
 ## 2. Implement AD Connect
+Now - please follow the picture story and **create a new AAD**:
+
+| 4. | 5. | 6. |
+|--|--|--|
+| ![On the DC install AD Connect](OnTheDC-InstallADConnect-3.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-4.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-5.png)  |
+| Logon **to Azure as global administrator** | Next: Specify your _onpremise_ **Domain Admin Credentials**  | To make our .local domain syncronize with AAD we need to **select the checkbox** - and hit **next**.<br>**Why?** _.local_ domains are not public, i.e. cannot be verified and are not routable. This is not optimal but is fine enough for our WVD sandbox. Go [here](https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) for further details.  |
+
+
+| 7. | 8. | 6. |
+|--|--|--|
+| ![On the DC install AD Connect](OnTheDC-InstallADConnect-6.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-7.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-8.png)  |
+| See which **settings are assumed** when using **express config** | ...**wait a while**  | Hit **exit** to finalize setup.  |
 
 ## 3. Result
-
+At the end of this setup your AAD should be synch'ed with your domain controller. To verify go to:
+```
+[Azure Portal] -> Azure Active Directory
+```  
+Your **AAD is in sync**: 
+![AD in sync](AAD-Synced.PNG)  
+and the **users are showing up in azure**:
+![AD in sync](AAD-SyncedUsers.PNG) 
 
 [back](../README.md) 

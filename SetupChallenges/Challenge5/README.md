@@ -1,3 +1,6 @@
-# Challenge 5: Manage Application Group
+# Challenge 5: Create A Host Pool
 
-[back](../README.md)
+[back](../README.md)  
+  
+You are here:  
+![Setup Flow](SetupFlow5.png)  
