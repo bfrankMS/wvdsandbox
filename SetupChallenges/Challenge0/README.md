@@ -65,8 +65,6 @@ The following script deploys the **network** and the **domain controller** into 
 Please **copy & paste this script into your Cloud Shell**:  
 
 ```PowerShell
-New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
-
 # These are some parameters for the dc deployment
 $templateParameterObject = @{
 'vmName' =  [string] 'wvdsdbox-AD-VM1'
@@ -76,6 +74,9 @@ $templateParameterObject = @{
 'DiskSku' = [string] 'StandardSSD_LRS'
 'DomainName' = [string] 'contoso.local'
 }
+
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
+
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject
 
 #Restart DC
