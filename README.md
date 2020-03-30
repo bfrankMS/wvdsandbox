@@ -26,6 +26,9 @@ The setup of WVD currently requires some things to be setup in order:
 ## Ready?
 [Go here for next steps](/SetupChallenges/README.md) (i.e. ordered setup)
 
+## Cleanup? 
+[Go here for cleanup routine](/CleanupChallenge/README.md)
+
 ## What the heck... 
 ...you may ask why do I:
 1. [_Need a domain controller in this scenario?_](#The%20DC%20is%20used%20for...)
