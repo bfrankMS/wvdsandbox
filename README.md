@@ -8,8 +8,10 @@ Nevertheless exercising this repo hopefully gives insights why things are differ
 So ride at your own risk and please use your brain ;-)  
 
 ## The WVD Sandbox Demo Environment
+This is the architecture of the simple WVD sandbox:  
+![Simple WVD Sandbox](FinalArchitecture.png)  
 
-> **Note**: I don't follow strictly the naming conventions as proposed [here](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging) - The reason? I like to see what's linked together when using the Azure Portal view & sorting.  
+> **Note**: I don't follow strictly the naming conventions as proposed [here](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging) - The reason? I like to see what's linked together when using the Azure Portal view & sorting. 
   
 **The major components are:** 
 * A Domain Controller: W2k19 Server with AD 'contoso.local' - + OU + Users
