@@ -64,7 +64,7 @@ and open PowerShell ISE as Administrator and run the code below:
 Install-Module -Name MSonline -Force
 
 #specify credentials for azure ad connect
-$Msolcred = Get-credential
+$Msolcred = Get-credential -Message "Please Enter Your AAD Tenant Creator Credentials"
 #connect to azure ad
 Connect-MsolService -Credential $MsolCred
  
@@ -102,7 +102,8 @@ while (get-job -State Running)
     get-job
     "- - - - -"
     sleep 10
-}  
+}
+  
 
 ```
 

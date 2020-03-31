@@ -33,6 +33,14 @@ $DomainPath = $((Get-ADDomain).DistinguishedName) # e.g."DC=contoso,DC=azure"
     New-ADGroup -GroupCategory:"Security" -GroupScope:"Global" -Name:"WVD Users" -Path:"OU=$OUName,$DomainPath" -SamAccountName:"WVD Users" 
 #endregion
 
+#disable IE Enhanced Security Configuration
+$ieESCAdminPath = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
+$ieESCUserPath = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
+$ieESCAdminEnabled = (Get-ItemProperty -Path $ieESCAdminPath).IsInstalled
+$ieESCAdminEnabled = 0
+Set-ItemProperty -Path $ieESCAdminPath -Name IsInstalled -Value $ieESCAdminEnabled
+Set-ItemProperty -Path $ieESCUserPath -Name IsInstalled -Value $ieESCAdminEnabled
+
 #region create some WVD test users
     $ADPath = "OU=$OUName,$DomainPath"
 
