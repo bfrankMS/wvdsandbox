@@ -66,10 +66,11 @@ Please **copy & paste this script into your Cloud Shell**:
 
 ```PowerShell
 # These are some parameters for the dc deployment
+$credential = Get-Credential -Message "Your VM Admin" -UserName 'wvdadmin'
 $templateParameterObject = @{
 'vmName' =  [string] 'wvdsdbox-AD-VM1'
-'adminUser'= [string] 'wvdadmin'
-'adminPassword' = [securestring]$(Read-Host -AsSecureString -Prompt "Please enter a password for the vm and domain admin.")
+'adminUser'= [string] $($credential.UserName)
+'adminPassword' = [securestring]$($credential.Password)
 'vmSize'=[string] 'Standard_F2s'
 'DiskSku' = [string] 'StandardSSD_LRS'
 'DomainName' = [string] 'contoso.local'
@@ -86,7 +87,7 @@ Restart-AzVM -Name $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvd
 Remove-AzVMCustomScriptExtension -Name 'DCInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force  
 
 #Do post AD installation steps: e.g. create OUs and some WVD Demo Users.
-Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -Run 'CSE_AD_Post.ps1' -Argument "WVD $($templateParameterObject.adminPassword)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
+Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -Run 'CSE_AD_Post.ps1' -Argument "WVD $($credential.GetNetworkCredential().Password)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
   
 #Cleanup
 Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  

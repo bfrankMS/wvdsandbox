@@ -3,7 +3,7 @@
     [string] $OUName,
 
     [Parameter(Mandatory=$True,Position=2)]
-    [securestring] $WVDUsersPassword
+    [string] $WVDUsersPassword
 )
 
 #this will be our temp folder - need it for download / logging
@@ -50,7 +50,10 @@ $DomainPath = $((Get-ADDomain).DistinguishedName) # e.g."DC=contoso,DC=azure"
         #Add-ADPrincipalGroupMembership -Identity:$user.DistinguishedName -MemberOf:"CN=Remote Desktop Users,CN=Builtin,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
         Set-ADGroup -Add:@{'Member'="CN=$userName,$ADPath"} -Identity:"CN=WVD Users,$ADPath" 
 
-        Set-ADAccountPassword -Identity:$user.DistinguishedName -NewPassword:$WVDUsersPassword -Reset:$true 
+        #Convert to secure string
+        $Password = ConvertTo-SecureString "$WVDUsersPassword" -AsPlainText -Force 
+
+        Set-ADAccountPassword -Identity:$user.DistinguishedName -NewPassword:$Password -Reset:$true 
         Set-ADObject -Identity:$user.DistinguishedName -Replace:@{"userAccountControl"="512"}   #enable account
         Set-ADUser -ChangePasswordAtLogon:$false -Identity:$user.DistinguishedName
     }
