@@ -23,7 +23,7 @@ Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -Credential $
 
 #Make Some Selections
 $tenantName = (Get-RdsTenant | Out-GridView -Title 'Select Your WVD Tenant' -OutputMode Single).TenantName
-$hostPoolName = (Get-RdsHostPool -TenantName $tenantName | Out-GridView -Title "Select Your Host Pool" -OutputMode Single).ostPoolName
+$hostPoolName = (Get-RdsHostPool -TenantName $tenantName | Out-GridView -Title "Select Your Host Pool" -OutputMode Single).HostPoolName
 
 #remove all users on all app groups
 $AppGroupNames = @()
@@ -32,12 +32,12 @@ foreach ($AppGroupName in $AppGroupNames)
 {
     #Remove App Group Users
     $appGroupUsers = @()
-    Get-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName | %{$appGroupUsers += $_.UserPrincipalName}
+    Get-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName | % {$appGroupUsers += $_.UserPrincipalName}
     $appGroupUsers | %{  Remove-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName -UserPrincipalName $_}  
 }
 
-Get-RdsSessionHost -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsSessionHost -TenantName $_.TenantName HostPoolName $_.HostPoolName -Name $_.SessionHostName -Verbose -Force}
-Get-RdsAppGroup  -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsAppGroup -TenantName $_.TenantName HostPoolName $_.HostPoolName -Name $_.AppGroupName -Verbose}
+Get-RdsSessionHost -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsSessionHost -TenantName $_.TenantName -HostPoolName $_.HostPoolName -Name $_.SessionHostName -Verbose -Force}
+Get-RdsAppGroup  -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsAppGroup -TenantName $_.TenantName -HostPoolName $_.HostPoolName -Name $_.AppGroupName -Verbose}
 
 #if you have apps in you app group
 #$appGroupsToRemove = @()
@@ -48,7 +48,9 @@ Get-RdsAppGroup  -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove
 Remove-RdsHostPool -TenantName $tenantName -Name $hostPoolName -Verbose
 
 #Remove RDS Tenant
-Remove-RdsTenant -TenantName $tenantName  
+Remove-RdsTenant -TenantName $tenantName
+  
+
 
 ```
 
@@ -59,7 +61,7 @@ Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
 ```  
 and open PowerShell ISE as Administrator and run the code below:   
 ```PowerShell
-Install-Module -Name MSonline
+Install-Module -Name MSonline -Force
 
 #specify credentials for azure ad connect
 $Msolcred = Get-credential
@@ -67,18 +69,19 @@ $Msolcred = Get-credential
 Connect-MsolService -Credential $MsolCred
  
 #disable AD Connect / Dir Sync
-Set-MsolDirSyncEnabled –EnableDirSync $false
+Set-MsolDirSyncEnabled –EnableDirSync $false -Force
  
 #confirm AD Connect / Dir Sync disabled
 (Get-MSOLCompanyInformation).DirectorySynchronizationEnabled
 
 #remove Synced Accounts from your AAD
 Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force
-Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account
-Sync*" | Remove-MsolUser -Force
+Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force
 
 #Remove the service principals for the WVD Enterprise Applications in your AAD
-Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-MsolServicePrincipal ObjectId $_.ObjectId }  
+Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-MsolServicePrincipal -ObjectId $_.ObjectId }
+  
+
 
 ```
   

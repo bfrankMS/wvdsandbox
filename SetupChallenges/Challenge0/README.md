@@ -81,19 +81,22 @@ New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'Net
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject
 
 #Restart DC
-Restart-AzVM -Name $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' 
+Restart-AzVM -Name $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics'
+
+#make sure DC is new DNS server in this VNET  
+az network vnet update -g 'rg-wvdsdbox-basics' -n 'wvdsdbox-vnet' --dns-servers 10.0.0.4 
 
 #cleanup: remove 'DCInstall' extension
 Remove-AzVMCustomScriptExtension -Name 'DCInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force  
+
+#wait a while - to let dc services start up 
+Start-Sleep -Seconds 240
 
 #Do post AD installation steps: e.g. create OUs and some WVD Demo Users.
 Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -Run 'CSE_AD_Post.ps1' -Argument "WVD $($credential.GetNetworkCredential().Password)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
   
 #Cleanup
-Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
-  
-#make sure DC is new DNS server in this VNET  
-az network vnet update -g 'rg-wvdsdbox-basics' -n 'wvdsdbox-vnet' --dns-servers 10.0.0.4  
+Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait
   
 
 ```
@@ -112,7 +115,9 @@ In order **to find the DC** we'll have to make sure the **DC's IP is listed in t
 
 ## 4. Create the File server.  
 The following code deploys the **file server** into the the 'rg-wvdsdbox-basics' resource group.  
-Please **copy & paste this script into your Cloud Shell**:    
+Please **copy & paste this script into your Cloud Shell**:  
+> **Important: Make sure you use the same password as in step 2.**  
+
 ```PowerShell
 # These are some parameters for the File Server deployment
 $templateParameterObject = @{

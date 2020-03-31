@@ -15,9 +15,7 @@ This is the architecture of the simple WVD sandbox:
   
 **The major components are:** 
 * A Domain Controller: W2k19 Server with AD 'contoso.local' - + OU + Users
-* A File Server: W2k19 Server with an additional disk used as file share.
-* Storage Account as software repository.
-
+* A File Server: W2k19 Server with an additional disk used as file share.  
 
 ## The WVD Setup Journey  
 The setup of WVD currently requires some things to be setup in order:  

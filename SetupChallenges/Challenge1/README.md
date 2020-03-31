@@ -46,7 +46,7 @@ Now - please follow the picture story and **create a new AAD**:
 | 4. | 5. | 6. |
 |--|--|--|
 | ![On the DC install AD Connect](OnTheDC-InstallADConnect-3.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-4.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-5.png)  |
-| Logon **to Azure as global administrator** | Next: Specify your _onpremise_ **Domain Admin Credentials**  | To make our .local domain syncronize with AAD we need to **select the checkbox** - and hit **next**.<br>**Why?** _.local_ domains are not public, i.e. cannot be verified and are not routable. This is not optimal but is fine enough for our WVD sandbox. Go [here](https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) for further details.  |
+| Logon **to Azure AD (AAD) you want to sync to as global administrator** | Next: Specify your _onpremise_ **Domain Admin Credentials**  | To make our .local domain syncronize with AAD we need to **select the checkbox** - and hit **next**.<br>**Why?** _.local_ domains are not public, i.e. cannot be verified and are not routable. This is not optimal but is fine enough for our WVD sandbox. Go [here](https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) for further details.  |
 
 
 | 7. | 8. | 6. |
