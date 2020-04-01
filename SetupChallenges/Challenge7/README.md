@@ -38,6 +38,7 @@ You **may** now **try** the following:
 - **[Implement FSLogix Application Masking](https://docs.microsoft.com/en-us/fslogix/implement-application-masking-tutorial)**
 - **Configure WVD Monitoring** using Log Analytics. [See](https://docs.microsoft.com/en-us/azure/virtual-desktop/diagnostics-log-analytics)
 - **[Scale session hosts using Azure Automation](https://docs.microsoft.com/en-us/azure/virtual-desktop/set-up-scaling-script)**
+- Implement **3rd party tools from sepago** (Monitoring, autoscale, User self service, Azure Admin for WVD) - go [here](https://www.sepago.de/en/wvd-value-add-tools/)
 ...
 
   

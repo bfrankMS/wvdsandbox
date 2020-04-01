@@ -44,7 +44,7 @@ Alternatively possible but fewer used is the Azure AD Domain Services feature (=
 FSLogix - an aquisition Microsoft did recently provides tools that redirect profile data to a e.g. remote file share.  
 [back](#%20What%20the%20heck...) 
 
-I know there is already loads of content out there. Nevertheless I hope this safes you some time.  
+I know there is already loads of content out there. Nevertheless I hope this saves you some time.  
 Feedback welcome!  
 
 Best,  

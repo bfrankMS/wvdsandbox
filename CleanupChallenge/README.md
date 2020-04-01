@@ -47,7 +47,7 @@ Get-RdsAppGroup  -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove
 #remove the hostpool
 Remove-RdsHostPool -TenantName $tenantName -Name $hostPoolName -Verbose
 
-#Remove RDS Tenant
+#Remove WVD Tenant
 Remove-RdsTenant -TenantName $tenantName
   
 
