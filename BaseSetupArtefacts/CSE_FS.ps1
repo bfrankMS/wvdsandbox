@@ -60,7 +60,7 @@ foreach ($RawDisk in $RawDisks) {
 
     for ($i = 1; $i -le 15; $i++) { 
         $aduser = Get-ADUser -Filter "Name -like ""WVDUser$i"""
-        $userProfilePath = "$myDir\$($aduser.SID)WVDUser$i"
+        $userProfilePath = "$myDir\$($aduser.SID)_WVDUser$i"
         mkdir $userProfilePath
         $users = @("$userDomain\Domain Admins", "$userDomain\$($aduser.Name)")
         $acl = get-acl -path $userProfilePath
