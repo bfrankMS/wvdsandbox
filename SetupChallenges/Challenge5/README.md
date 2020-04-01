@@ -32,7 +32,7 @@ For ease of use we use the Azure portal for creating a host pool:
 | 4. | 5. | 6. |
 |--|--|--|
 | ![Create Host Pool wizard](HostPool-4.PNG)  |![Create Host Pool wizard](HostPool-5.PNG)  |![Create Host Pool wizard](HostPool-6.PNG)  |
-| <ul><li>Windows Virtual Desktop tenant name: **_The tenant you created in [Challenge3](../Challenge3/README.md) (in my case 'Contoso 4711')_**  </li><li>UPN: _your **AAD Tenant Creator user** (in my case 'admin@contoso4711.onmicrosoft.com')_</li><li>Password: **_the tenant creators password_**</li></ul> | Verify and **Create**  | See the deployment process.  |  
+| <ul><li>Windows Virtual Desktop tenant name: **_The tenant you created in [Challenge3](../Challenge3/README.md) (in my case 'Contoso 4711')_**  </li><li>UPN: _your **AAD Tenant Creator user** (in my case 'admin@contoso4711.onmicrosoft.com')_</li><li>Password: **_the tenant creators password_**</li></ul> Note: If you have done [Challenge4](../Challenge4/README.md) you might use the Service Principal as 'user' | Verify and **Create**  | See the deployment process.  |  
   
 ## As Result...
 you should have 2 session hosts in your resource group with are domain joined:  

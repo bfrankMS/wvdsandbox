@@ -80,6 +80,11 @@ Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchroniza
 
 #Remove the service principals for the WVD Enterprise Applications in your AAD
 Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-MsolServicePrincipal -ObjectId $_.ObjectId }
+
+#Remove the app registration for the  Windows Virtual Desktop Svc Principal 
+if (!(get-module azuread -ListAvailable)) {Install-Module AzureAD -Force}
+Connect-AzureAD -Credential $MsolCred
+Get-AzureADApplication | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-AzureADApplication -ObjectId $_.ObjectId}
   
 
 
@@ -104,6 +109,7 @@ while (get-job -State Running)
     sleep 10
 }
   
+
 
 ```
 
