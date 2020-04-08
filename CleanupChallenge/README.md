@@ -108,6 +108,12 @@ while (get-job -State Running)
     "- - - - -"
     sleep 10
 }
+
+# Report that you have cleaned up - this code will only trigger a website to raise a counter++ - i.e. no private data (e.g. ipaddresses will be transmitted)
+$apiURL = "https://bfrankpageviewcounter.azurewebsites.net/api/GetPageViewCount"
+$body = @{URL='wvdsdbox-cleanup'} | ConvertTo-Json
+$webrequest = Invoke-WebRequest -Method Post -Uri $apiURL -Body $body -ContentType 'application/json'
+Write-Output $("URL: '{0}' has been counted: '{1}' times" -f $(($body | ConvertFrom-Json).URL), $webrequest.Content)
   
 
 

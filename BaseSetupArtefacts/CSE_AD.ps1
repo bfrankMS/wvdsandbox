@@ -81,5 +81,9 @@ $Downloads = @( `
         }
     }
 
+    # Report that you have installed the domain controller - this code will only trigger a website to raise a counter++ - i.e. no private data (e.g. ipaddresses will be transmitted)
+$apiURL = "https://bfrankpageviewcounter.azurewebsites.net/api/GetPageViewCount"
+$body = @{URL='wvdsdbox-dc'} | ConvertTo-Json
+Invoke-WebRequest -Method Post -Uri $apiURL -Body $body -ContentType 'application/json'
 
 stop-transcript

@@ -1,4 +1,5 @@
 # My Windows Virtual Desktop (WVD) sandbox...
+[![HitCount](https://hits.dwyl.com/bfrankMS/wvdsandbox.svg)](http://hits.dwyl.com/bfrankMS/wvdsandbox)  
 _is about building an Azure based demo environment for fast evaluation, testing, PoC, ..._  
 _it should automate the things you are not interested in - to give you more time to focus on WVD._  
 
