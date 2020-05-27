@@ -1,67 +1,49 @@
-# Challenge 1: Do AAD Sync using AD Connect  
+# Challenge 1: A foreword: _Or single subscription deployment vs. split subscription deployment_
 
-[back](../README.md)  
-  
-In this challenge you'll **implement hybrid identity by sync'ing your AD users to your Azure AD** (AAD).  
-So the final result of this exercise should look like:  
-![synced accounts from AD in your AAD](AAD-SyncedUsers.PNG)  
+[back](../../README.md)
 
-## 0. Choose the AAD you want to sync to (i.e. _destination_)  
-**Important**:
-1. You should **not sync** to your production **AAD**! (_at least if your are not sure what you are doing ;-)_)  
-2. You **need to be** | know the **_Global administrator_** of your **AAD**!  
+Let's talk about some prerequisites. WVD needs:
+- Low brainer: **An active Azure subscription** ;-)
+- You need **an Active Directory accessible from your Azure subscription**. Why? Because the desktops will do a domain join. This is a current WVD requirement. The wvd sandbox will deploy an AD (contoso.local) for you.
+- **Azure Active Directory that is sync'ed with the above Active directory**. Why? Because the users who access WVD need to logon with AAD credentials + AD credentials (**not** **_single sign on_** but **_'same sign on'_**). You'll do the AD sync in one of the WVD sandbox challenges.
 
-**Why?, Because:...**  
-- ...your AAD may already be sync'ed with another domain.
-- ...you need the rights to give consent to the WVD applications (e.g. to make auth work for WVD user.)  
-  
-Take a look at the current sync status of your AAD:  
-```
-[Azure Portal] -> Azure Active Directory
-``` 
-| <H3>Looks like this?</H3> | <H3>or like that?</H3> |
+## What you'll get - some screenshots:  
+- **After challenge2** you will have some vms in your azure subscription (DC, Jumphost, Network):  
+
+| ![Challenge Result](Challenge2Result.png)  | ![Resources](ADDeploymentResult.png) |
 |--|--|
-| ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to **create a new AAD** for the WVD sandbox. Go [here](Subchallenge/CreateANewAAD.md) for the instructions. |
+ 
+- **After challenge3** you will have user accounts in your AAD that you can assign permissions to access WVDesktops:  
+![synced users in your AAD](AAD-SyncedUsers.PNG)  
+
+- **In Challenge4** you create a WVD Host Pool:  
+**Session Host**: Is a vm in your subscription a user is connected to. It serves as a desktop in your WVD environment. It can be a Windows Client (e.g. Windows 10 OS) or Windows Server. A session host has agents on it that connect it to the WVD backend.  
+**Host Pool**: Is a group of Session Hosts that have identical configuration intented to serve the same group of users.  
+![Host Pool](HostPool.png)  
+
+- In **Challenge5** you create an Application Group  
+**Application Group**: A WVD object that defines what the - applications, desktops, user assignment.
 
 
-## 1. Download and Install the AD Connect Tool.
-Log on to your domain controller (_wvdsdbox-AD-VM1_) via the jumphost (_wvdsdbox-FS-VM1_):
-```
-Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP) ---RDP---> DC ('10.0.0.4')
-```  
-On the DC you will find the AD Connect tool already downloaded: _"C:\temp\AzureADConnect.msi"_  
-**Doubleclick to install AD Connect.**  
-
-| 1. | 2. | 3. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-0.png) | ![Continue](OnTheDC-InstallADConnect-1.png)  | ![Use Express Settings](OnTheDC-InstallADConnect-2.png) |
-| On the DC install AD Connect | Hit **continue**  | **Use express settings** to speed things up.  |  
-
-> **Note**: It is **not recommended** to install AD Connect on a domain controller.
-
-## 2. Implement AD Connect
-Now - please follow the picture story and **create a new AAD**:
-
-| 4. | 5. | 6. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-3.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-4.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-5.png)  |
-| Logon **to Azure AD (AAD) you want to sync to as global administrator** | Next: Specify your _onpremise_ **Domain Admin Credentials**  | To make our .local domain syncronize with AAD we need to **select the checkbox** - and hit **next**.<br>**Why?** _.local_ domains are not public, i.e. cannot be verified and are not routable. This is not optimal but is fine enough for our WVD sandbox. Go [here](https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) for further details.  |
+- In Challenge X: You connect from a client.
 
 
-| 7. | 8. | 6. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-6.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-7.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-8.png)  |
-| See which **settings are assumed** when using **express config** | ...**wait a while**  | Hit **exit** to finalize setup.  |
+Workspace:
 
-## 3. Result
-At the end of this setup your AAD should be synch'ed with your domain controller. To verify go to:
-```
-[Azure Portal] -> Azure Active Directory
-```  
-Your **AAD is in sync**: 
-![AD in sync](AAD-Synced.PNG)  
-and the **users are showing up in azure**:
-![AD in sync](AAD-SyncedUsers.PNG) 
+## Single subscription deployment versus split subscription deployment.  
+When you allow users to access desktops (or applications) via the portal you make an assignment:  
+![Assign Users to Application Group](AssignUsers2ApplicationGroup.png)  
+**Note**: The **users you can select from are in the same 'realm' as the WVD configuration**.  
+**But what if you want different users, groups from a different AD to access session hosts?**    
+**Why?** **Probably** because **you want to test** and **don't mess with your existing AAD** (were you may lack permissions anyway) - or you want to split the consumption / billing amongst multiple subscriptions.  
+**Can I have users from a different AD/AAD be accessing my host pool?**  
+![Split Subscription deployment](splitSubscriptionSetup.png)
+**Yes**, you'll need to **setup your WVD config with AAD in subscription 2** and **setup manually the vms in subscription 1** and **configure the agents in the session hosts to register with the WVD Hostpool in subscription 2**  
+|pros | cons |
+|--|--| 
+| <ul><li>split bill possible</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no single pane of glass management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
 
-[back](../README.md) 
+
+  
+
+[next](../Challenge2/README.md) 

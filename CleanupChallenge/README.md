@@ -75,8 +75,8 @@ Set-MsolDirSyncEnabled –EnableDirSync $false -Force
 (Get-MSOLCompanyInformation).DirectorySynchronizationEnabled
 
 #remove Synced Accounts from your AAD
-Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force
-Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force
+Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force -RemoveFromRecycleBin
+Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force -RemoveFromRecycleBin 
 
 #Remove the service principals for the WVD Enterprise Applications in your AAD
 Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-MsolServicePrincipal -ObjectId $_.ObjectId }
@@ -85,7 +85,9 @@ Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Deskt
 if (!(get-module azuread -ListAvailable)) {Install-Module AzureAD -Force}
 Connect-AzureAD -Credential $MsolCred
 Get-AzureADApplication | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-AzureADApplication -ObjectId $_.ObjectId}
-  
+
+#Clear the AAD recycle bin for apps  
+Get-AzureADDeletedApplication -all 1 | ForEach-Object { Remove-AzureADdeletedApplication -ObjectId $_.ObjectId  }  
 
 
 ```
