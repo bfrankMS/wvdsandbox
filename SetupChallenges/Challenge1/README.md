@@ -25,10 +25,9 @@ Let's talk about some prerequisites. WVD needs:
 **Application Group**: A WVD object that defines what the - applications, desktops, user assignment.
 
 
-- In Challenge X: You connect from a client.
-
-
-Workspace:
+- In **Challenge 6**: You connect to your workspace from a client.  
+For this a workspace must be configured first. ["...A workspace is a logical grouping of application groups in Windows Virtual Desktop. Each Windows Virtual Desktop application group must be associated with a workspace for users to see the remote apps and desktops published to them..."](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces)  
+![Remote Desktop App shows workspace](Workspace.PNG)  
 
 ## Single subscription deployment versus split subscription deployment.  
 When you allow users to access desktops (or applications) via the portal you make an assignment:  
@@ -42,8 +41,8 @@ When you allow users to access desktops (or applications) via the portal you mak
 |pros | cons |
 |--|--| 
 | <ul><li>split bill possible</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no single pane of glass management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
-
-
   
+The **WVD Sandbox assumes you will do a single subscription deployment**. However if you run / perform the steps accordingly in the right subscription you can achieve a split subscription deployment with the content here. However I have not documented it explicitly.  
+ 
 
 [next](../Challenge2/README.md) 

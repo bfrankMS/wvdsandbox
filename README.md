@@ -40,7 +40,9 @@ A screenshot story to guides you through the process of syncing user accounts in
 - [Challenge 5: Manage Application Group](/SetupChallenges/Challenge6/README.md)
 - [Challenge 6: Test from client](/SetupChallenges/Challenge7/README.md)
 - [Challenge X: What's next?](/SetupChallenges/Challenge7/README.md)
-- [Challenge XX: Want to clean up & delete the sandbox? ](/CleanupChallenge/README.md)
+
+## Want to delete the wvd sandbox?  
+[Please go here for the cleanup routine](/CleanupChallenge/README.md)
 
 ## What the heck... 
 ...you may ask why do I:
