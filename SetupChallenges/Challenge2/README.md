@@ -144,22 +144,14 @@ The deployment **will take approximately 25 mins** - please be patient. You can 
 ![Deployment Progress](Deploymentprogress.PNG)
 - Or **follow the cloud shell output**  
 
- Once finished the cloud shell looks similar to this:  
- ![cloud shell finished](CloudShell3.png)
-and your Resource Group _rg-wvdsdbox-basics_ should contain a DC:  
-![AD Deployment Result](ADDeploymentResult.png)  
-Now you can **proceed with the next step**.  
+You are finished when the cloud shell looks similar to this:  
+![Cloudshell finished for File server](CloudShell4.png)  
 
 ## 3. Make the created DC the DNS Server of the VNET  
 **This is very important**: The fileserver and the host Pool VMs (aka 'Session Hosts') **will join the previously created domain**.  
 In order **to find the DC** we'll have to make sure the **DC's IP is listed in the VNETs DNS Servers**.:  
   
 ![DC is VNETs DNS Server](DCisVnetsDNSserver.PNG)  
-
-
-  
-You are finished when the cloud shell looks similar to this:  
-![Cloudshell finished for File server](CloudShell4.png)  
 
 ## 4. Conclusion  
 If everything went well you should have 2 servers as azure vms that build up a domain (_contoso.local_):  

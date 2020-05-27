@@ -22,7 +22,7 @@ Take a look at the current sync status of your AAD:
 | <H3>Looks like this?</H3> | <H3>or like that?</H3> |
 |--|--|
 | ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to **create a new AAD** for the WVD sandbox. Go [here](Subchallenge/CreateANewAAD.md) for the instructions. |
+| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to do a split subscription deployment. Go [here](../Challenge1/README.md) for the explanation. |
 
 
 ## 1. Download and Install the AD Connect Tool.
@@ -68,4 +68,4 @@ Your **AAD is in sync**:
 and the **users are showing up in azure**:
 ![AD in sync](AAD-SyncedUsers.PNG) 
 
-[back](../README.md) 
+[next](../Challenge4/README.md) 

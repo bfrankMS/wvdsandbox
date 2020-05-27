@@ -41,6 +41,15 @@ When you allow users to access desktops (or applications) via the portal you mak
 |pros | cons |
 |--|--| 
 | <ul><li>split bill possible</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no single pane of glass management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
+### Still not sure?
+Take a look at the current sync status of your AAD:  
+```
+[Azure Portal] -> Azure Active Directory
+``` 
+| <H3>Looks like this?</H3> | <H3>or like that?</H3> |
+|--|--|
+| ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
+| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to do a split subscription deployment.|
   
 The **WVD Sandbox assumes you will do a single subscription deployment**. However if you run / perform the steps accordingly in the right subscription you can achieve a split subscription deployment with the content here. However I have not documented it explicitly.  
  
