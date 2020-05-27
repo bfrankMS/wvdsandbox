@@ -76,11 +76,13 @@ $templateParameterObject1 = @{
 'DomainName' = [string] 'contoso.local'
 }
 
+#Deploy the network
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
 
+#Deploy the VM and make it a domain controller
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject1
 
-#Restart DC
+#Restart the DC
 Restart-AzVM -Name $($templateParameterObject1.vmName) -ResourceGroupName 'rg-wvdsdbox-basics'
 
 #make sure DC is new DNS server in this VNET  
