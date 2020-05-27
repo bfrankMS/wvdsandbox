@@ -67,7 +67,7 @@ Please **copy & paste this script into your Cloud Shell**:
 ```PowerShell
 # These are some parameters for the dc deployment
 $credential = Get-Credential -Message "Your VM Admin" -UserName 'wvdadmin'
-$templateParameterObject = @{
+$templateParameterObject1 = @{
 'vmName' =  [string] 'wvdsdbox-AD-VM1'
 'adminUser'= [string] $($credential.UserName)
 'adminPassword' = [securestring]$($credential.Password)
@@ -78,26 +78,17 @@ $templateParameterObject = @{
 
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
 
-New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'DCSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/02-ARM_AD.json' -TemplateParameterObject $templateParameterObject1
 
 #Restart DC
-Restart-AzVM -Name $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics'
+Restart-AzVM -Name $($templateParameterObject1.vmName) -ResourceGroupName 'rg-wvdsdbox-basics'
 
 #make sure DC is new DNS server in this VNET  
 az network vnet update -g 'rg-wvdsdbox-basics' -n 'wvdsdbox-vnet' --dns-servers 10.0.0.4 
 
 #cleanup: remove 'DCInstall' extension
-Remove-AzVMCustomScriptExtension -Name 'DCInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force  
+Remove-AzVMCustomScriptExtension -Name 'DCInstall' -VMName $($templateParameterObject1.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force  
 
-#wait a while - to let dc services start up 
-Start-Sleep -Seconds 240
-
-#Do post AD installation steps: e.g. create OUs and some WVD Demo Users.
-Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -Run 'CSE_AD_Post.ps1' -Argument "WVD $($credential.GetNetworkCredential().Password)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
-  
-#Cleanup
-Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait
-  
 
 ```
 **Note**: You will be asked for a **password**. Make sure it is **complex enough** (pls see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) for details).  
@@ -129,21 +120,27 @@ The following code deploys the **file server** into the the 'rg-wvdsdbox-basics'
 Please **copy & paste this script into your Cloud Shell**:  
 ```PowerShell
 # These are some parameters for the File Server deployment
-$templateParameterObject = @{
+$templateParameterObject2 = @{
 'vmName' =  [string] 'wvdsdbox-FS-VM1'
-'adminUser'= [string] 'wvdadmin'
-'adminPassword' = [securestring]$(Read-Host -AsSecureString -Prompt "Please enter a password for the vm and domain admin (wvdadmin).")
+'adminUser'= [string] $($credential.UserName)
+'adminPassword' = [securestring]$($credential.Password)
 'vmSize'=[string] 'Standard_F2s'
 'DiskSku' = [string] 'StandardSSD_LRS'
 'DomainName' = [string] 'contoso.local'
 }
-New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'FileServerSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/03-ARM_FS.json' -TemplateParameterObject $templateParameterObject
+New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'FileServerSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/03-ARM_FS.json' -TemplateParameterObject $templateParameterObject2
+
+#Do post AD installation steps: e.g. create OUs and some WVD Demo Users.
+Set-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject1.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject1.vmName)).Location -Run 'CSE_AD_Post.ps1' -Argument "WVD $($credential.GetNetworkCredential().Password)" -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_AD_Post.ps1'  
+  
+#Cleanup
+Remove-AzVMCustomScriptExtension -Name 'PostDCActions' -VMName $($templateParameterObject1.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait
 
 # make this server a file server.
-Set-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject.vmName)).Location -Run 'CSE_FS.ps1' -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_FS.ps1' 
+Set-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject2.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Location (Get-AzVM -ResourceGroupName 'rg-wvdsdbox-basics' -Name $($templateParameterObject2.vmName)).Location -Run 'CSE_FS.ps1' -FileUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/CSE_FS.ps1' 
 
 #Cleanup
-Remove-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
+Remove-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject2.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
   
 ```  
 **Important: Make sure you use the same password as in step 2.**  
@@ -164,4 +161,4 @@ The **main artefacts and purposes** are:
 | wvdsdbox-FS-VM1 | VM  | <ul><li>IP:10.0.253.4</li><li>Fileserver, Jumpserver</li><li>member of contoso.local</li><li>has public IP for remote administration</li><li>can host fileshares for FSLogix profiles ('\\\wvdsdbox-FS-VM1\Profiles0')</li></ul>|
 |wvdsdbox-vnet  | virtual network |  <ul><li>AddressRange: 10.0.0.0/16</li><li>DNS: 10.0.0.4</li><li>has subnets for WVD:<ul><li>snet-HostPool1 (10.0.1.0/24)</li><li>snet-HostPool2 (10.0.2.0/24)</li><li>snet-HostPool3 (10.0.3.0/24)</li></ul></li></ul>   |
   
-[back](../README.md) 
+[next](../Challenge3/README.md) 
