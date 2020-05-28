@@ -76,6 +76,8 @@ $templateParameterObject1 = @{
 'DomainName' = [string] 'contoso.local'
 }
 
+$deploymentstart = Get-Date
+
 #Deploy the network
 New-AzResourceGroupDeployment -ResourceGroupName 'rg-wvdsdbox-basics' -Name 'NetworkSetup' -Mode Incremental -TemplateUri 'https://raw.githubusercontent.com/bfrankMS/wvdsandbox/master/BaseSetupArtefacts/01-ARM_Network.json'
 
@@ -132,6 +134,8 @@ Set-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParam
 #Cleanup
 Remove-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject2.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
   
+#done :-)
+"Hey you are done - deployment duration is:{0}" -f  $(NEW-TIMESPAN –Start $deploymentstart –End $(Get-Date)).ToString("hh\:mm\:ss")
 
 ```
 **Note**: You will be asked for a **password**. Make sure it is **complex enough** (pls see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) for details).  

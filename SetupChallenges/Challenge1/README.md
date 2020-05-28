@@ -36,9 +36,10 @@ When you allow users to access desktops (or applications) via the portal you mak
 **Note**: The **users you can select from are in the same 'realm' as the WVD configuration**.  
 **But what if you want different users, groups from a different AD to access session hosts?**    
 **Why?** **Probably** because **you want to test** and **don't mess with your existing AAD** (were you may lack permissions anyway) - or you want to split the consumption / billing amongst multiple subscriptions.  
-**Can I have users from a different AD/AAD be accessing my host pool?**  
+**So the question is - can I have users from a different AD/AAD be accessing my host pool?**    
+
 ![Split Subscription deployment](splitSubscriptionSetup.png)
-**Yes**, you'll need to **setup your WVD config with AAD in subscription 2** and **setup manually the vms in subscription 1** and **configure the agents in the session hosts to register with the WVD Hostpool in subscription 2**  
+**Yes**, you'll need to **setup your WVD config with AAD in subscription 2** and **setup manually the vms in subscription 1** and **configure the agents in the session hosts to register with the WVD Hostpool in subscription 2**.  
 |pros | cons |
 |--|--| 
 | <ul><li>split bill possible</li><li>can use 'my' users</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no 'single pane of glass' management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
