@@ -47,6 +47,8 @@ Get-AzureADDeletedApplication -all 1 | ForEach-Object { Remove-AzureADdeletedApp
 ```
 
 ## 2. Remove WVD Artefacts (Application Groups, Host Pools)
+**Copy & Paste this code into your Cloud Shell**. It will destroy the WVD sandbox RGs containing the all azure artefacts.  
+Saved all your work? Think again. Following code makes no backup ;-)
 ```PowerShell
 Install-Module -Name Az.DesktopVirtualization -Force
 
@@ -63,13 +65,6 @@ foreach ($hostPool in $hostPools)
 	}
 }
 
-```
-  
-## 3. Delete Azure Artefacts (e.g. VMs., Network,...)
-**Copy & Paste this code into your Cloud Shell**. It will destroy the WVD sandbox RGs containing the all azure artefacts.  
-Saved all your work? Think again. Following code makes no backup ;-)
-
-```PowerShell
 $RGPrefix = "rg-wvdsdbox-"
 $RGSuffixes = @("basics","hostpool-1","hostpool-2","hostpool-3")
 $RGLocation = 'westeurope'   # for alternatives try: 'Get-AzLocation | ft Location'
@@ -89,8 +84,8 @@ $apiURL = "https://bfrankpageviewcounter.azurewebsites.net/api/GetPageViewCount"
 $body = @{URL='wvdsdbox-cleanup'} | ConvertTo-Json
 $webrequest = Invoke-WebRequest -Method Post -Uri $apiURL -Body $body -ContentType 'application/json'
 Write-Output $("URL: '{0}' has been counted: '{1}' times" -f $(($body | ConvertFrom-Json).URL), $webrequest.Content)
-  
 
+Write-Output "done."
 
 ```
 
