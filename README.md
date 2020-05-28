@@ -1,6 +1,7 @@
 # My Windows Virtual Desktop (WVD) sandbox...
 [![HitCount](https://hits.dwyl.com/bfrankMS/wvdsandbox.svg)](http://hits.dwyl.com/bfrankMS/wvdsandbox)  
-_...is about **build**ing **a**n Azure based **WVD demo** environment for fast evaluation, testing, PoC, ..._  
+_...is about **build**ing **a**n Azure based **WVD demo** environment for fast evaluation, testing, learning, PoCs, ..._  
+_...**is green-field** - i.e. scripts are **not** intended **for subscriptions where AAD is already sync'ed to an AD**..._  
 _...should **save you time** on things you are not interested (=**building prerequisites**) and give you more **to focus on WVD**._  
 
 **Facts**: 

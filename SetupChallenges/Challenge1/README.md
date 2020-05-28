@@ -1,11 +1,12 @@
-# Challenge 1: A foreword: _Or single subscription deployment vs. split subscription deployment_
+# Challenge 1: WVD Sandbox Requirements _or single subscription deployment vs. split subscription deployment_
 
 [back](../../README.md)
 
-Let's talk about some prerequisites. WVD needs:
-- Low brainer: **An active Azure subscription** ;-)
-- You need **an Active Directory accessible from your Azure subscription**. Why? Because the desktops will do a domain join. This is a current WVD requirement. The wvd sandbox will deploy an AD (contoso.local) for you.
-- **Azure Active Directory that is sync'ed with the above Active directory**. Why? Because the users who access WVD need to logon with AAD credentials + AD credentials (**not** **_single sign on_** but **_'same sign on'_**). You'll do the AD sync in one of the WVD sandbox challenges.
+| **WVD prerequisites** | **WVD Sandbox requirements** |
+|--|--|
+| <ul><li>A **valid Azure subscription** ;-) </li></ul>| <ul><li>A **valid Azure subscription**</li></ul> |
+| <ul><li>An **Active Directory accessible from the Azure subscription**.</li></ul> Why? Because the desktops will do a domain join. This is a current WVD requirement.  |  <ul><li>**WVD Sandbox will deploy an AD** (contoso.local) **for you**.  </li></ul>|
+| <ul><li>An **Azure Active Directory** that is **sync'ed with** the above **Active directory**.</li></ul> Why? Because the users who access WVD need to logon with AAD credentials + AD credentials (not single sign on but 'same sign on'). | <ul><li>**You** need to be **global administrator of the Azure Active Directory** where your subscription is mapped to.</li><li>An **AAD** that is **not currently sync'ed with an AD** yet.</li></ul>Why? **You'll do the AD sync!** in one of the WVD sandbox challenges. |
 
 ## What you'll get - some screenshots:  
 - **After challenge2** you will have some vms in your azure subscription (DC, Jumphost, Network):  
@@ -40,7 +41,7 @@ When you allow users to access desktops (or applications) via the portal you mak
 **Yes**, you'll need to **setup your WVD config with AAD in subscription 2** and **setup manually the vms in subscription 1** and **configure the agents in the session hosts to register with the WVD Hostpool in subscription 2**  
 |pros | cons |
 |--|--| 
-| <ul><li>split bill possible</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no single pane of glass management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
+| <ul><li>split bill possible</li><li>can use 'my' users</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no 'single pane of glass' management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
 ### Still not sure?
 Take a look at the current sync status of your AAD:  
 ```
@@ -49,9 +50,9 @@ Take a look at the current sync status of your AAD:
 | <H3>Looks like this?</H3> | <H3>or like that?</H3> |
 |--|--|
 | ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to do a split subscription deployment.|
+| **Good to go!** | **This AAD is sync'ing already**. Maybe you want to do a split subscription deployment.|
   
-The **WVD Sandbox assumes you will do a single subscription deployment**. However if you run / perform the steps accordingly in the right subscription you can achieve a split subscription deployment with the content here. However I have not documented it explicitly.  
+The **WVD Sandbox assumes you will do a single subscription deployment**. However if you run / perform the steps accordingly in the right subscriptions you can achieve a split subscription deployment with the content here. However I have not documented it explicitly.  
  
 
 [next](../Challenge2/README.md) 
