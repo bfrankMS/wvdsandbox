@@ -50,7 +50,7 @@ Now let's **create some Resource Groups copy & paste the following code into the
 ```PowerShell
 $RGPrefix = "rg-wvdsdbox-"
 $RGSuffixes = @("basics","hostpool-1","hostpool-2","hostpool-3")
-$RGLocation = 'westeurope'   # for alternatives try: 'Get-AzLocation | ft Location'
+$RGLocation = 'germanywestcentral'   # for alternatives try: 'Get-AzLocation | ft Location' #germanywestcentral
 
 foreach ($RGSuffix in $RGSuffixes)
 {
@@ -135,9 +135,11 @@ Set-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParam
 Remove-AzVMCustomScriptExtension -Name 'FileServerInstall' -VMName $($templateParameterObject2.vmName) -ResourceGroupName 'rg-wvdsdbox-basics' -Force -NoWait  
   
 #done :-)
-"Hey you are done - deployment duration is:{0}" -f  $(NEW-TIMESPAN –Start $deploymentstart –End $(Get-Date)).ToString("hh\:mm\:ss")
+"Hey you are done - your deployment took:{0}" -f  $(NEW-TIMESPAN –Start $deploymentstart –End $(Get-Date)).ToString("hh\:mm\:ss")  
+  
 
-```
+```  
+
 **Note**: You will be asked for a **password**. Make sure it is **complex enough** (pls see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) for details).  
 ![wvdadmin password](wvdadminpwd.png)
 **!!!Remember these credentials!!!:**  
@@ -149,7 +151,7 @@ The deployment **will take approximately 25 mins** - please be patient. You can 
 - Or **follow the cloud shell output**  
 
 You are finished when the cloud shell looks similar to this:  
-![Cloudshell finished for File server](CloudShell4.png)  
+![Cloudshell finished for File server](CloudShellEnd.png)  
 
 ## 3. Make the created DC the DNS Server of the VNET  
 **This is very important**: The fileserver and the host Pool VMs (aka 'Session Hosts') **will join the previously created domain**.  

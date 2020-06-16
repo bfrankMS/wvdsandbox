@@ -13,7 +13,7 @@ So the final result of this exercise should look like:
 
 **Why?, Because:...**  
 - ...your AAD may already be sync'ed with another domain.
-- ...you need the rights to give consent to the WVD applications (e.g. to make auth work for WVD user.)  
+- ...you need the rights to configure the sync.
   
 Take a look at the current sync status of your AAD:  
 ```
@@ -22,18 +22,24 @@ Take a look at the current sync status of your AAD:
 | <H3>Looks like this?</H3> | <H3>or like that?</H3> |
 |--|--|
 | ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to do a split subscription deployment. Go [here](../Challenge1/README.md#single-subscription-deployment-versus-split-subscription-deployment) for the explanation. |
+| **Good to go!** | **This AAD is sync'ing already**. Maybe you'll want to do a split subscription deployment. Go [here](../Challenge1/README.md#single-subscription-deployment-versus-split-subscription-deployment) for the explanation. |
 
 
 ## 1. Download and Install the AD Connect Tool.
 **Log on to your jumphost** (_wvdsdbox-FS-VM1_) via the azure portal:  
+```
+Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
+```  
 
 **User:** contoso\wvdadmin  
 **Pwd:** _%your password%_
 
 ![ConnectToJumpHost](ConnectToJumpHost.png)
 
-In **the jumphost do a remote desktop connection ("double-hop") to your DC** ('10.0.0.4').  
+In **the jumphost do a remote desktop connection ("double-hop") to your DC** ('10.0.0.4'). 
+```
+Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP) ---RDP--->  DC ('10.0.0.4'). 
+```   
 **On the DC** you will find the **AD Connect** tool already downloaded: **_"C:\temp\AzureADConnect.msi"_**  
 **Doubleclick to install AD Connect.**  
 
@@ -44,7 +50,7 @@ In **the jumphost do a remote desktop connection ("double-hop") to your DC** ('1
 
 > **Note**: It is **not** a best practice to install AD Connect on a domain controller.
 
-## 2. Implement AD Connect _(5min)_
+## 2. Implement AD Connect _(10min)_
 Now - please follow the picture story and **create a new AAD**:
 
 | 4. | 5. | 6. |

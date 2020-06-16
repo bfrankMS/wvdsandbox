@@ -14,6 +14,9 @@ Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
 ```  
 and open PowerShell ISE as Administrator and run the code below:   
 ```PowerShell
+#Install Latest Nuget Package Provider
+Install-PackageProvider Nuget -Force -Verbose
+
 Install-Module -Name MSonline -Force
 
 #specify credentials for azure ad connect
@@ -29,7 +32,12 @@ Set-MsolDirSyncEnabled –EnableDirSync $false -Force
 
 #remove Synced Accounts from your AAD
 Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force 
-Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force  
+Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force 
+$groups = ("DnsAdmins", "ADSyncPasswordSet", "ADSyncOperators","ADSyncBrowse","ADSyncAdmins","DnsUpdateProxy","WVD Users")
+foreach ($group in $groups)
+{
+    Get-MsolGroup -SearchString $group | Remove-MsolGroup -Force 
+} 
 Get-MsolUser -ReturnDeletedUsers | Remove-MsolUser -RemoveFromRecycleBin -Force
 
 #Remove the service principals for the WVD Enterprise Applications in your AAD
@@ -41,7 +49,7 @@ Connect-AzureAD -Credential $MsolCred
 Get-AzureADApplication | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-AzureADApplication -ObjectId $_.ObjectId}
 
 #Clear the AAD recycle bin for apps  
-Get-AzureADDeletedApplication -all 1 | ForEach-Object { Remove-AzureADdeletedApplication -ObjectId $_.ObjectId  } 
+Get-AzureADDeletedApplication -all 1 | ForEach-Object { Remove-AzureADdeletedApplication -ObjectId $_.ObjectId  }  
 
 
 ```
@@ -85,7 +93,8 @@ $body = @{URL='wvdsdbox-cleanup'} | ConvertTo-Json
 $webrequest = Invoke-WebRequest -Method Post -Uri $apiURL -Body $body -ContentType 'application/json'
 Write-Output $("URL: '{0}' has been counted: '{1}' times" -f $(($body | ConvertFrom-Json).URL), $webrequest.Content)
 
-Write-Output "done."
+Write-Output "done."  
+
 
 ```
 
