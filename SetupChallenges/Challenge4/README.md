@@ -1,6 +1,6 @@
 # Challenge 4: Create A WVD Host Pool 
 
-[back](../README.md)  
+[back](../../README.md)
 
 ## HostPool ##
 _**A Session Host**_ : **Is a vm** in your subscription a user will connected to. It **serves as a desktop | application host** in your WVD environment. It can be a Windows Client (e.g. Windows 10 OS) or Windows Server. A session host has agents on it that connect it to the WVD backend.  
@@ -41,7 +41,7 @@ Use the following values:
 |Domain to join| **contoso.local** |
 |Organizational Unit path| **OU=HostPool1,OU=WVD,DC=contoso,DC=local**|
 |AD domain join UPN| **wvdadmin@contoso.local**|
-|Passwort|****|  
+|Password|*********[that you used in setup at Challenge2](../Challenge2/README.md)|  
 ![Virtual Machine Settings](AddVirtualMachines2.png)  
 
 ## Workspace ##  

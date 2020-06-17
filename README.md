@@ -31,19 +31,31 @@ This is **the architecture you will get** when deploying the WVD sandbox:
 * After that users e.g. WVDUser1@_yourAADdomain_.onmicrosoft.com can then **use e.g. the web portal to connect to** his workspace: application or **desktop**. 
 
 ## The WVD Sandbox Setup  
-- [Challenge 1: A foreword: Or single subscription deployment vs. split subscription deployment ](/SetupChallenges/Challenge1/README.md)  
+- [**Challenge 1: A foreword: Or single subscription deployment vs. split subscription deployment**](/SetupChallenges/Challenge1/README.md)  
 Some reading about the prerequisites - screenshots of the result - when it makes sense to do a split subscription setup of WVD.
-- [Challenge 2: Setup Basics i.e. Network, Domain Contoso And Member File Server](/SetupChallenges/Challenge2/README.md)  
+- [**Challenge 2: Setup Basics** i.e. Network, Domain Contoso And Member File Server](/SetupChallenges/Challenge2/README.md)  
 This will do the work of setting up the base requirements - it contains powershell code that'll deploy vms to your subscription.
-- [Challenge 3: Do AAD Sync using AD Connect](/SetupChallenges/Challenge3/README.md)  
+- [**Challenge 3: Do AAD Sync** using AD Connect](/SetupChallenges/Challenge3/README.md)  
 A screenshot story to guides you through the process of syncing user accounts in Active Directory for use with Azure Active Directory.
-- [Challenge 4: Create A Host Pool](/SetupChallenges/Challenge5/README.md)
-- [Challenge 5: Manage Application Group](/SetupChallenges/Challenge6/README.md)
-- [Challenge 6: Test from client](/SetupChallenges/Challenge7/README.md)
-- [Challenge X: What's next?](/SetupChallenges/Challenge7/README.md)
+- [**Challenge 4: Create A WVD Host Pool** ](/SetupChallenges/Challenge4/README.md)
+Here you will create the desktops a user can connect to.
+- [**Challenge 5: Enable Remote Desktop Access** For Users](/SetupChallenges/Challenge5/README.md)
+Configure access to a desktop for a group of users.
+- [**Challenge 6: Test Remote Desktop Access** With A User Via the Web Portal](/SetupChallenges/Challenge6/README.md)
+Hopefully your WVD sandbox does work... :-)
+- [**Challenge X: What's next?**](/SetupChallenges/ChallengeX/README.md)
+Ideas for you what to do next.
 
 ## Want to delete the wvd sandbox?  
 [Please go here for the cleanup routine](/CleanupChallenge/README.md)
+
+## Link List
+- Christiaan's massive [WVD 2020 spring update...deployment walkthrough](https://christiaanbrinkhoff.com/2020/05/01/windows-virtual-desktop-technical-2020-spring-update-arm-based-model-deployment-walkthrough/)
+- Marcel's [Windows Virtual Desktop administration tool](https://bit.ly/32TYOTp)
+- Video [Azure Academy on WVD](https://www.youtube.com/channel/UC-MXgaFhsYU8PkqgKBdnusQ)
+- Video [Microsoft Mechanics on WVD](https://aka.ms/wvdyt)
+- Jim Moyle's [Install-LanguagePack PowerShell Script](https://github.com/JimMoyle/Install-LanguagePack)
+- [docs.microsoft.com on WVD](https://docs.microsoft.com/en-us/azure/virtual-desktop/overview)
 
 ## What the heck... 
 ...you may ask why do I:

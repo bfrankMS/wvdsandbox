@@ -1,6 +1,6 @@
 # Challenge 2: Setup Basics i.e. Network, Domain Contoso And Member File Server 
 
-[back](../README.md)
+[back](../../README.md)
 
 In this challenge we will setup the basics requied for the WVD Sandbox. In order to save time we will use the Azure Cloud Shell to run some PowerShell code.  
 > **Note**: With the use of Azure Cloud Shell we don't need to install something on your local box. No version conflics. And you are already authenticated at Azure ;-)

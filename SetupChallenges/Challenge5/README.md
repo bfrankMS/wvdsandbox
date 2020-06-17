@@ -1,6 +1,6 @@
 # Challenge 5: Enable Remote Desktop Access For Users
 
-[back](../README.md)  
+[back](../../README.md)
 
 >**To allow users to connect to a desktop we first must assign a user to an application group.**  
 

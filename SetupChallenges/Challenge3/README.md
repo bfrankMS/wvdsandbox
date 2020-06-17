@@ -1,6 +1,6 @@
 # Challenge 1: Do AAD Sync using AD Connect  
 
-[back](../README.md)  
+[back](../../README.md)
   
 In this challenge you'll **implement hybrid identity by sync'ing your AD users to your Azure AD** (AAD).  
 So the final result of this exercise should look like:  

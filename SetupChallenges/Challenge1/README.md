@@ -20,15 +20,15 @@
 - **In Challenge4** you create a WVD Host Pool:  
 **Session Host**: Is a vm in your subscription a user is connected to. It serves as a desktop in your WVD environment. It can be a Windows Client (e.g. Windows 10 OS) or Windows Server. A session host has agents on it that connect it to the WVD backend.  
 **Host Pool**: Is a group of Session Hosts that have identical configuration intented to serve the same group of users.  
-![Host Pool](HostPool.png)  
+![Host Pool](SessionHostsInHostPool.png)  
 
-- In **Challenge5** you create an Application Group  
-**Application Group**: A WVD object that defines what the - applications, desktops, user assignment.
+- In **Challenge5** you Enable Remote Desktop Access For Users  
+For this you assign a user group to an WVD **Application Group**
+![Assign group to Desktop Application Group](HP1-DAG-AddGroup.png)
 
-
-- In **Challenge 6**: You connect to your workspace from a client.  
-For this a workspace must be configured first. ["...A workspace is a logical grouping of application groups in Windows Virtual Desktop. Each Windows Virtual Desktop application group must be associated with a workspace for users to see the remote apps and desktops published to them..."](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces)  
-![Remote Desktop App shows workspace](Workspace.PNG)  
+- In **Challenge 6**: You connect to your WVD workspace from a client.  
+["...A workspace is a logical grouping of application groups in Windows Virtual Desktop. Each Windows Virtual Desktop application group must be associated with a workspace for users to see the remote apps and desktops published to them..."](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces)  
+![WVD Web Access shows workspace with desktop](WebLogon2.png)  
 
 ## Single subscription deployment versus split subscription deployment.  
 When you allow users to access desktops (or applications) via the portal you make an assignment:  

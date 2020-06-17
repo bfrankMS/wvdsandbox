@@ -1,6 +1,6 @@
 # Challenge 6: Test Remote Desktop Access With A User Via the Web Portal
 
-[back](../README.md)  
+[back](../../README.md) 
   
 WVD brings a [Web Portal at a public internet facing address](https://rdweb.wvd.microsoft.com/arm/webclient/index.html) that any WVD user can use to access his desktops | applications.
 
@@ -21,7 +21,7 @@ Once successful you should see your **myFirstWorkspace**:
 
 | ![Doubleclick on the session desktop](Desktop1.png) |  ![Logon to the session desktop](Desktop2.png)| ![Desktop access via html5](Desktop3.png) |
 |--|--|--|
-| Doubleclick on the session desktop  | Logon to the destkop using the domain credentials:<ul><li><b>contoso\wvduser3</b></li><li><i>password you used for the wvdadmin [in Challenge2](../Challenge2/README.md)</i></li></ul>  | On success you have a desktop access within your browser |  
+| Doubleclick on the session desktop  | Logon to the destkop using the domain credentials:<ul><li><b>contoso\wvduser3</b></li><li><i>password that you used for the wvdadmin [in Challenge2](../Challenge2/README.md)</i></li></ul>  | On success you have a desktop within your browser |  
   
 **Congratulations** You now have a working WVD sandbox.
  
