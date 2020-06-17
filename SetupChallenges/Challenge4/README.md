@@ -25,7 +25,7 @@ Use the following values:
 | Name | Value |
 |--|--|
 | Resource group | **rg-wvdsdbox-hostpool-1** |
-|Virtual machine location | **West Europe**|
+|Virtual machine location | **[the same region you used for rg-wvdsdbox... in Challenge2](../Challenge2/README.md)**|
 |Virtual machine size |e.g. **Standard B2s**|
 |Number of VMs | e.g. **2**|
 |Name prefix| e.g. **HP1-VM** |
