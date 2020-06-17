@@ -67,15 +67,12 @@ Ideas for you what to do next.
 In WVD a user is connecting to a desktop machine - this is a domain joined VM with a Windows OS on it. Hence the VM (aka 'Session Host') is domain joined on creation and therefore we need a DC.  
 Under real life circumstances this DC would probably be installed in a VM in Azure that is syncing / replicating via a private Tunnel (S2S VPN | ExpressRoute) to an onpremise Domain Controller.  
 Alternatively possible but fewer used is the Azure AD Domain Services feature (= 'AD as PaaS') in Azure.  
-[back](#%20What%20the%20heck...) 
 
 ### The File Server is used as...
-... a destination for profile data to be written to. Which profiles? Well, each user logging onto a Windows OS gets various profile folders (e.g. Documents, Pictures, Downloads,...). Content placed there should _'travel'_ with the user - as the user might catch a different VM (aka 'Session Host') at next logon.  
-FSLogix - an aquisition Microsoft did recently provides tools that redirect profile data to a e.g. remote file share.  
-[back](#%20What%20the%20heck...) 
+... a jump host as I didn't want to put a public IP address on the DC. You may use it as a file server for profile data to be written to. Which profiles? Well, each user logging onto a Windows OS gets various profile folders (e.g. Documents, Pictures, Downloads,...). Content placed there should _'travel'_ with the user - as the user might catch a different VM (aka 'Session Host') at next logon.  
+FSLogix - an aquisition Microsoft did recently provides tools that redirect profile data to a e.g. remote file share. 
 
-I know there is already loads of content out there. Nevertheless I hope this saves you some time.  
-Feedback welcome!  
+I hope the wvd sandbox saves you some time.  
 
 Best,  
 Bernhard
