@@ -50,12 +50,31 @@ Now let's **create some Resource Groups copy & paste the following code into the
 ```PowerShell
 $RGPrefix = "rg-wvdsdbox-"
 $RGSuffixes = @("basics","hostpool-1","hostpool-2","hostpool-3")
-$RGLocation = 'germanywestcentral'   # for alternatives try: 'Get-AzLocation | ft Location' #germanywestcentral
+$RGLocation = ""
+
+#select your deployment region
+do {
+    $regions = @("")
+    Get-AzLocation | foreach -Begin { $i = 0 } -Process {
+        $i++
+        $regions += "{0}. {1}" -f $i, $_.Location
+    } -outvariable menu
+    $regions | Format-Wide { $_ } -Column 4 -Force
+    $r = Read-Host "Select a region to deploy to by number"
+    $RGLocation = $regions[$r].Split()[1]
+    if ($RGLocation -eq $null) { Write-Host "You must make a valid selection" -ForegroundColor Red }
+    else {
+        Write-Host "Selecting region $($regions[$r])" -ForegroundColor Green
+    }
+}
+until ($RGLocation -ne $null)
 
 foreach ($RGSuffix in $RGSuffixes)
 {
    New-AzResourceGroup -Name "$($RGPrefix)$($RGSuffix)" -Location $RGLocation
-}
+}  
+
+
 ```  
 As result you should get something like:  
 ![Some Resource Groups](SomeRGs.PNG)
