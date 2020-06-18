@@ -6,9 +6,9 @@ _...should **save you time** on things you are not interested (=**building prere
 
 **Facts**: 
 * This is self-paced learning.
-* Latest successful run: 18.06.2020
-* Duration: i.e. Time to WVD sandbox = 1h 50min
-* WVD version: works with the current WVD Spring Update
+* Latest successful run: **18.06.2020**
+* **Duration**: i.e. Time to WVD sandbox = **1h 50min**
+* WVD version: **works** with the current **WVD Spring Update**
 * Automation done using PowerShell, Azure ARM Templates, Azure VM Custom Script Extensions  -> all stored in the BaseSetupArtefacts folder
 
 > **Disclaimer**: Practices shown here are in **no way** best practices. **Focus of this lab is functionality & speed**.  
