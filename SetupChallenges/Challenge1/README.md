@@ -4,7 +4,7 @@
 
 | **WVD prerequisites** | **WVD Sandbox requirements** |
 |--|--|
-| <ul><li>A **valid Azure subscription** ;-) </li></ul>| <ul><li>A **valid Azure subscription**</li></ul> |
+| <ul><li>A **valid Azure subscription** ;-) </li></ul>| <ul><li>A **valid Azure subscription**</li><li>**you have owner privileges**  (Azure Portal -> Subscription -> Access Control)</li></ul> |
 | <ul><li>An **Active Directory accessible from the Azure subscription**.</li></ul> Why? Because the desktops will do a domain join. This is a current WVD requirement.  |  <ul><li>**WVD Sandbox will deploy an AD** (contoso.local) **for you**.  </li></ul>|
 | <ul><li>An **Azure Active Directory** that is **sync'ed with** the above **Active directory**.</li></ul> Why? Because the users who access WVD need to logon with AAD credentials + AD credentials (not single sign on but 'same sign on'). | <ul><li>**You** need to be **global administrator of the Azure Active Directory** where your subscription is mapped to.</li><li>An **AAD** that is **not currently sync'ed with an AD** yet.</li></ul>Why? **You'll do the AD sync!** in one of the WVD sandbox challenges. |
 

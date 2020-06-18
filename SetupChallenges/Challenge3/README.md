@@ -1,4 +1,4 @@
-# Challenge 1: Do AAD Sync using AD Connect  
+# Challenge 3: Do AAD Sync using AD Connect  
 
 [back](../../README.md)
   

@@ -73,6 +73,7 @@ foreach ($RGSuffix in $RGSuffixes)
 {
    New-AzResourceGroup -Name "$($RGPrefix)$($RGSuffix)" -Location $RGLocation
 }  
+#remember your region :-)  
 
 
 ```  
