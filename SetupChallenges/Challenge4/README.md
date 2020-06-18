@@ -1,51 +1,63 @@
-# [optional] Challenge 4: Create a Service Principal for WVD Administration
+# Challenge 4: Create A WVD Host Pool 
 
-[back](../README.md)  
-  
-You are here:  
-![Setup Flow](SetupFlow4.png)
+[back](../../README.md)
 
-A service principal for WVD can help you to automate tasks or is an alternative if your AAD requires multi-factor authentication.
-Check out [Create service principals and role assignments by using PowerShell](https://docs.microsoft.com/en-us/azure/virtual-desktop/create-service-principal-role-powershell)  
-What would you like to automate? E.g. Host Pool creation, draining session hosts after business hours.
+## HostPool ##
+_**A Session Host**_ : **Is a vm** in your subscription a user will connected to. It **serves as a desktop | application host** in your WVD environment. It can be a Windows Client (e.g. Windows 10 OS) or Windows Server. A session host has agents on it that connect it to the WVD backend.  
+_**A Host Pool**_: Is a **collection of Session Hosts with identical configuration** intented to serve the same group of users.
 
-**RDP into your jumpserver**:  
+**Follow the steps in the WVD** [Tutorial: Create a host pool with the Azure portal](https://docs.microsoft.com/en-us/azure/virtual-desktop/create-host-pools-azure-marketplace) and use the following values:
+
+| Name | Value |
+|--|--|
+| Resource group | **rg-wvdsdbox-hostpool-1** |
+|Host pool name | **HP1**|
+|Location |e.g. **East US**|
+|Host pool type | **pooled**|
+|Max session limit| e.g. **5** |
+|Load balancing algorithm | **Breadth-first** |  
+
+## Session Hosts ## 
+Select **Yes** to add virtual machines as Session Hosts to this Host pool:  
+![Add virtual machines to host pool](AddVirtualMachines.png)  
+
+Use the following values:  
+| Name | Value |
+|--|--|
+| Resource group | **rg-wvdsdbox-hostpool-1** |
+|Virtual machine location | **[the same region you used for rg-wvdsdbox... in Challenge2](../Challenge2/README.md)**|
+|Virtual machine size |e.g. **Standard B2s**|
+|Number of VMs | e.g. **2**|
+|Name prefix| e.g. **HP1-VM** |
+|Image type | **Gallery** | 
+|Image  | e.g. **Windows 10 Enterprise multi-session,...+ Office 365 Pro...** |
+|OS disk type| **Standard SSD** |
+|Virtual network | **wvdsdbox-vnet** |
+|Subnet| **snet-HostPool1**|
+|Public IP| No |
+|Network security group| Basic|
+|Public inbound ports| No |
+|Specify domain or unit| **Yes**|
+|Domain to join| **contoso.local** |
+|Organizational Unit path| **OU=HostPool1,OU=WVD,DC=contoso,DC=local**|
+|AD domain join UPN| **wvdadmin@contoso.local**|
+|Password|*********[that you used in setup at Challenge2](../Challenge2/README.md)|  
+![Virtual Machine Settings](AddVirtualMachines2.png)  
+
+## Workspace ##  
+ ["...A workspace is a logical grouping of application groups in Windows Virtual Desktop. Each Windows Virtual Desktop application group must be associated with a workspace for users to see the remote apps and desktops published to them..."](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces)  
+In the Workspace select **Yes** and **create** a workspace e.g. **myFirstWorkspace**:  
+![AddWorkspace](AddWorkspace.png)  
+
+ 
+Hit **Review & Create** and create your Hostpool with VMs (= Session Hosts) &  Workspace. This will trigger a deployment that will take a while:  
+![Host Pool Deployment](HostPoolDeployment.png)
+
+## Result ##  
+When the deployment finished successfully you should find 2 Session hosts in your new Host pool:  
 ```
-Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
-```  
-And c**opy & Paste the following code into a PowerShell ISE script window**.  
-When you run **the code will create a Service Principal in your AAD and give it RDS owner permissions on the WVD tenant**:
-
-```PowerShell
-# Import (install) required AzureAD module
-if ($(Get-Module -Name AzureAD -ListAvailable) -eq $null) {Write-Output 'Installing required module AzureAD...'; Install-Module -Name AzureAD -Force}
-Import-Module -Name AzureAD
-
-$aadContext = Connect-AzureAD        # Logon to the AAD where your Windows Virtual Desktop Applications are registered. logon as global administrator 
-$svcPrincipal = New-AzureADApplication -AvailableToOtherTenants $true -DisplayName "Windows Virtual Desktop Svc Principal"
-$svcPrincipalCreds = New-AzureADApplicationPasswordCredential -ObjectId $svcPrincipal.ObjectId
-
-Write-Output "# Copy the output below you'll need it for later logons"
-"`$svcPrincipalCreds_Value=`t`"{0}`" `n`$aadContext_TenantId_Guid=`t`"{1}`" `n`$svcPrincipal_AppId=`t`"{2}`"" -f $svcPrincipalCreds.Value, $aadContext.TenantId.Guid, $svcPrincipal.AppId
+[Azure Portal] --> Search: "Windows Virtual Desktop" --> Host pools --> "HP1" --> Session hosts -->
+```
+![Session Hosts In Host Pool](SessionHostsInHostPool.png)  
   
-Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com"       # Logon as your Tenant Creator user
-$tenantName = (Get-RdsTenant | Out-GridView -Title 'Select Your WVD Tenant' -OutputMode Single).TenantName
-
-New-RdsRoleAssignment -RoleDefinitionName "RDS Owner" -ApplicationId $($svcPrincipal.AppId) -TenantName $tenantName
-Get-RdsRoleAssignment -TenantName $tenantName | ft TenantName, AppId, ObjectType, SignInName, RoleDefinitionName
-
-```  
-The result should be the following:  
-| 1. | 2. | 3. |
-|--|--|--|
-| ![Windows Virtual Desktop Svc Principal](WVDSvcPrincipal0.PNG)  |![Windows Virtual Desktop Svc Principal](WVDSvcPrincipal1.PNG)  |![Windows Virtual Desktop Svc Principal](WVDSvcPrincipal2.PNG)  |
-| 1st output of the PowerShell code. **Copy & store for later use** (e.g. in [Challenge5](../Challenge5/README.md) see screenshot below).  | Verify here: `[Azure Portal] --> Azure Active Directory --> App registrations` | 2nd output: **See that your Service Principal has owner rights on your tenant**  |  
-
-**PS:** You could now c**reate a Host Pool using the Service Principals Credentials** - rather than those from a user:
-![Create Hostpool using Svc Principal](HostPoolCreationUsingSvcPrincipal.PNG)  
-see next [Challenge5](../Challenge5/README.md) for further details.  
-  
-**Congrats! You successfully created an Azure Service Principal for WVD administration.**  
-
-
-[back](../README.md) 
+[next](../Challenge5/README.md) 

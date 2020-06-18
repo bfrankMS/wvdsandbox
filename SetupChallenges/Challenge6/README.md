@@ -1,66 +1,28 @@
-# Challenge 6: Manage Application Group
+# Challenge 6: Test Remote Desktop Access With A User Via the Web Portal
 
-[back](../README.md)  
+[back](../../README.md) 
   
-You are here:  
-![Setup Flow](SetupFlow6.png)  
-  
-**Before a user can connect to a desktop** | application - **they must have** been given **the permission** to.  
-So this challenge is about managing access by **configur**ing **a WVD Application Group**.
+WVD brings a [Web Portal at a public internet facing address](https://rdweb.wvd.microsoft.com/arm/webclient/index.html) that any WVD user can use to access his desktops | applications.
 
-See also [Tutorial: Manage app groups for Windows Virtual Desktop](https://docs.microsoft.com/en-us/azure/virtual-desktop/manage-app-groups)  
-
-## Add Users From AAD To The (default) Desktop Application Group  
-The hostpool in the previous challenge was created through the Azure portal. **Most** other **admin tasks for WVD need** to be done using **PowerShell** (**Version <= 5.1**   - note: currently pscore not supported).  
-**RDP into your jumpserver**:  
+In Challenge 5 we allowed any user in group 'WVD Users' to access a desktop. Let's just look into your AAD to select a user we will use for testing.  
 ```
-Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
+[Azure Portal] --> Azure Active Directory --> Users
 ```  
-and **open PowerShell ISE as Administrator and copy & paste the following code**:  
-```PowerShell
-Import-Module -Name Microsoft.RDInfra.RDPowerShell 
 
-#Sign in to Windows Virtual Desktop
-$azureCredential = Get-Credential -Message "Please Enter Your AAD Tenant Creator Credentials"   #in my case admin@contoso4711.onmicrosoft.com
-Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -Credential $azureCredential   
+I chose WVDUser3 to logon at the [WVD Web Portal](https://rdweb.wvd.microsoft.com/arm/webclient/index.html)
+![Login using a WVDUser3](WebLogon.png)  
+  
+> Note: You may need to use a private (or incognito mode) browsing session to avoid auto logon.  
+> **Note++**: The **users password** is the same that **you used for the wvdadmin** (the setup in [Challenge2](../Challenge2/README.md))   
 
-#Make Some Selections
-$tenantName = (Get-RdsTenant | Out-GridView -Title 'Select Your WVD Tenant' -OutputMode Single).TenantName
+Once successful you should see your **myFirstWorkspace**:  
+![Successful logged on to web gateway](WebLogon2.png)  
+  
 
-$hostPoolName = (Get-RdsHostPool -TenantName $tenantName | Out-GridView -Title "Select Your Host Pool" -OutputMode Single).HostPoolName
-
-$AppGroupName = (Get-RdsAppGroup -TenantName $tenantName -HostPoolName $hostPoolName | Out-GridView -Title "Select your app group" -OutputMode Single).AppGroupName 
-
-
-#Add Users From AAD To App Group
-if (!(get-module azuread -ListAvailable)) {Install-Module AzureAD -Force}
-Connect-AzureAD -Credential $azureCredential
-$users = @()
-Get-AzureADUser -All $true | Out-GridView -Title "Add (multiple) Users To Apllication Group: $AppGroupName" -OutputMode Multiple | %{$users += $_.UserPrincipalName}  
-$users | % { Add-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName -UserPrincipalName $_}
-
-#Output All Users Now That Have Access To This App Group
-"The App Group: '$AppGroupName' contains the users: '{0}'" -f $($(Get-RdsAppGroupUser  -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName ).UserPrincipalName -join ', ')  
-
-```  
-Some screenshots:  
-| 1. | 2. | 3. |
+| ![Doubleclick on the session desktop](Desktop1.png) |  ![Logon to the session desktop](Desktop2.png)| ![Desktop access via html5](Desktop3.png) |
 |--|--|--|
-| ![Manage App Group](ManageAppGroup1.PNG)  |![Manage App Group](ManageAppGroup2.PNG)  |![Manage App Group](ManageAppGroup3.PNG)  |
-| Login using **your WVD Tenant Creator** _(in my case admin@contoso4711.onmi...)_  | **Select WVD Tenant, HostPool and Application Group**  | **Select Users to Add**  |
-## Result...
-will be that the **users** you **have** added now have **access** **to** the default **Desktop Application Group**, i.e. they can now connect to the virtual desktop (see [Challenge7](../Challenge7/README.md))
-
-**Congrats! You successfully allowed users to access a WVD published desktop.**
-
-> **PS:** The following **code removes users from the application group**:  
-```PowerShell
-#remove users from AAD from app group
-$appGroupUsers = @()
-Get-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName | Out-GridView -Title "Select users to remove from app group" -OutputMode Multiple | %{$appGroupUsers += $_.UserPrincipalName}
-$appGroupUsers | %{  Remove-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName -UserPrincipalName $_}  
-
-```
-
-
-[back](../README.md)  
+| Doubleclick on the session desktop  | Logon to the destkop using the domain credentials:<ul><li><b>contoso\wvduser3</b></li><li><i>password that you used for the wvdadmin [in Challenge2](../Challenge2/README.md)</i></li></ul>  | On success you have a desktop within your browser |  
+  
+**Congratulations** You now have a working WVD sandbox.
+ 
+[next](../ChallengeX/README.md)

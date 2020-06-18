@@ -1,20 +1,49 @@
-# Challenge 1: Do AAD Sync using AD Connect  
+# Challenge 1: WVD Sandbox Requirements _or single subscription deployment vs. split subscription deployment_
 
-[back](../README.md)  
-  
-In this challenge you'll **implement hybrid identity by sync'ing your AD users to your Azure AD** (AAD).  
-So the final result of this exercise should look like:  
-![synced accounts from AD in your AAD](AAD-SyncedUsers.PNG)  
+[back](../../README.md)
 
-## 0. Choose the AAD you want to sync to (i.e. _destination_)  
-**Important**:
-1. You should **not sync** to your production **AAD**! (_at least if your are not sure what you are doing ;-)_)  
-2. You **need to be** | know the **_Global administrator_** of your **AAD**!  
+| **WVD prerequisites** | **WVD Sandbox requirements** |
+|--|--|
+| <ul><li>A **valid Azure subscription** ;-) </li></ul>| <ul><li>A **valid Azure subscription**</li><li>**you have owner privileges**  (Azure Portal -> Subscription -> Access Control)</li></ul> |
+| <ul><li>An **Active Directory accessible from the Azure subscription**.</li></ul> Why? Because the desktops will do a domain join. This is a current WVD requirement.  |  <ul><li>**WVD Sandbox will deploy an AD** (contoso.local) **for you**.  </li></ul>|
+| <ul><li>An **Azure Active Directory** that is **sync'ed with** the above **Active directory**.</li></ul> Why? Because the users who access WVD need to logon with AAD credentials + AD credentials (not single sign on but 'same sign on'). | <ul><li>**You** need to be **global administrator of the Azure Active Directory** where your subscription is mapped to.</li><li>An **AAD** that is **not currently sync'ed with an AD** yet.</li></ul>Why? **You'll do the AD sync!** in one of the WVD sandbox challenges. |
 
-**Why?, Because:...**  
-- ...your AAD may already be sync'ed with another domain.
-- ...you need the rights to give consent to the WVD applications (e.g. to make auth work for WVD user.)  
-  
+## What you'll get - some screenshots:  
+- **After challenge2** you will have some vms in your azure subscription (DC, Jumphost, Network):  
+
+| ![Challenge Result](Challenge2Result.png)  | ![Resources](ADDeploymentResult.png) |
+|--|--|
+ 
+- **After challenge3** you will have user accounts in your AAD that you can assign permissions to access WVDesktops:  
+![synced users in your AAD](AAD-SyncedUsers.PNG)  
+
+- **In Challenge4** you create a WVD Host Pool:  
+**Session Host**: Is a vm in your subscription a user is connected to. It serves as a desktop in your WVD environment. It can be a Windows Client (e.g. Windows 10 OS) or Windows Server. A session host has agents on it that connect it to the WVD backend.  
+**Host Pool**: Is a group of Session Hosts that have identical configuration intented to serve the same group of users.  
+![Host Pool](SessionHostsInHostPool.png)  
+
+- In **Challenge5** you Enable Remote Desktop Access For Users  
+For this you assign a user group to an WVD **Application Group**
+![Assign group to Desktop Application Group](HP1-DAG-AddGroup.png)
+
+- In **Challenge 6**: You connect to your WVD workspace from a client.  
+["...A workspace is a logical grouping of application groups in Windows Virtual Desktop. Each Windows Virtual Desktop application group must be associated with a workspace for users to see the remote apps and desktops published to them..."](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces)  
+![WVD Web Access shows workspace with desktop](WebLogon2.png)  
+
+## Single subscription deployment versus split subscription deployment.  
+When you allow users to access desktops (or applications) via the portal you make an assignment:  
+![Assign Users to Application Group](AssignUsers2ApplicationGroup.png)  
+**Note**: The **users you can select from are in the same 'realm' as the WVD configuration**.  
+**But what if you want different users, groups from a different AD to access session hosts?**    
+**Why?** **Probably** because **you want to test** and **don't mess with your existing AAD** (were you may lack permissions anyway) - or you want to split the consumption / billing amongst multiple subscriptions.  
+**So the question is - can I have users from a different AD/AAD be accessing my host pool?**    
+
+![Split Subscription deployment](splitSubscriptionSetup.png)
+**Yes**, you'll need to **setup your WVD config with AAD in subscription 2** and **setup manually the vms in subscription 1** and **configure the agents in the vms to make them register as 'session hosts' within the WVD Hostpool in subscription 2**.  
+|pros | cons |
+|--|--| 
+| <ul><li>split bill possible</li><li>can use 'my' users</li><li>circumvent AAD permission shortage</li></ul>| <ul><li>you need 2 active subscriptions</li><li>no 'single pane of glass' management</li><li>cannot use portal to setup session hosts (manual)</li></ul> |
+### Still not sure?
 Take a look at the current sync status of your AAD:  
 ```
 [Azure Portal] -> Azure Active Directory
@@ -22,46 +51,9 @@ Take a look at the current sync status of your AAD:
 | <H3>Looks like this?</H3> | <H3>or like that?</H3> |
 |--|--|
 | ![The right AAD -Yes](TheRightAAD-Yes.PNG)  | ![The right AAD - No](TheRightAAD-No.PNG)  |
-| **Good to go!** | **This AAD is sync'ing already**. You'll probably want to **create a new AAD** for the WVD sandbox. Go [here](Subchallenge/CreateANewAAD.md) for the instructions. |
+| **Good to go!** | **This AAD is sync'ing already**. Maybe you want to do a split subscription deployment.|
+  
+The **WVD Sandbox assumes you will do a single subscription deployment**. However if you run / perform the steps accordingly in the right subscriptions you can achieve a split subscription deployment with the content here. However I have not documented it explicitly.  
+ 
 
-
-## 1. Download and Install the AD Connect Tool.
-Log on to your domain controller (_wvdsdbox-AD-VM1_) via the jumphost (_wvdsdbox-FS-VM1_):
-```
-Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP) ---RDP---> DC ('10.0.0.4')
-```  
-On the DC you will find the AD Connect tool already downloaded: _"C:\temp\AzureADConnect.msi"_  
-**Doubleclick to install AD Connect.**  
-
-| 1. | 2. | 3. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-0.png) | ![Continue](OnTheDC-InstallADConnect-1.png)  | ![Use Express Settings](OnTheDC-InstallADConnect-2.png) |
-| On the DC install AD Connect | Hit **continue**  | **Use express settings** to speed things up.  |  
-
-> **Note**: It is **not recommended** to install AD Connect on a domain controller.
-
-## 2. Implement AD Connect
-Now - please follow the picture story and **create a new AAD**:
-
-| 4. | 5. | 6. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-3.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-4.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-5.png)  |
-| Logon **to Azure AD (AAD) you want to sync to as global administrator** | Next: Specify your _onpremise_ **Domain Admin Credentials**  | To make our .local domain syncronize with AAD we need to **select the checkbox** - and hit **next**.<br>**Why?** _.local_ domains are not public, i.e. cannot be verified and are not routable. This is not optimal but is fine enough for our WVD sandbox. Go [here](https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) for further details.  |
-
-
-| 7. | 8. | 6. |
-|--|--|--|
-| ![On the DC install AD Connect](OnTheDC-InstallADConnect-6.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-7.png)  | ![On the DC install AD Connect](OnTheDC-InstallADConnect-8.png)  |
-| See which **settings are assumed** when using **express config** | ...**wait a while**  | Hit **exit** to finalize setup.  |
-
-## 3. Result
-At the end of this setup your AAD should be synch'ed with your domain controller. To verify go to:
-```
-[Azure Portal] -> Azure Active Directory
-```  
-Your **AAD is in sync**: 
-![AD in sync](AAD-Synced.PNG)  
-and the **users are showing up in azure**:
-![AD in sync](AAD-SyncedUsers.PNG) 
-
-[back](../README.md) 
+[next](../Challenge2/README.md) 

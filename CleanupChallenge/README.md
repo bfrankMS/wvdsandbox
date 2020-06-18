@@ -2,65 +2,21 @@
 
 [back](../README.md)  
 
-1. Remove WVD Artefacts (Application Groups, Host Pools, WVD Tenant)
-2. Break AAD Sync. Cleanup Users. Delete WVD Apps.
-3. Delete Azure Artefacts (e.g. VMs., Network,...)
+1. Break AAD Sync. Cleanup Users.
+2. Remove WVD Artefacts (Application Groups, Host Pools)
+3. Delete other Azure Artefacts (e.g. VMs., Network,...)
 
 
-
-## 1. Remove WVD Artefacts (Application Groups, Host Pools, WVD Tenant)
-**RDP into your jumpserver**:  
-```
-Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
-```  
-> **Important**: You **cannot use the azure cloud shell** for this code (_is running PScore >= 7.0_). It **must be PowerShell version 5.1|5.0.** 
-```PowerShell
-Import-Module -Name Microsoft.RDInfra.RDPowerShell 
-
-#Sign in to Windows Virtual Desktop
-$azureCredential = Get-Credential -Message "Please Enter Your AAD Tenant Creator Credentials"   #in my case admin@contoso4711.nmicrosoft.com
-Add-RdsAccount -DeploymentUrl "https://rdbroker.wvd.microsoft.com" -Credential $azureCredential   
-
-#Make Some Selections
-$tenantName = (Get-RdsTenant | Out-GridView -Title 'Select Your WVD Tenant' -OutputMode Single).TenantName
-$hostPoolName = (Get-RdsHostPool -TenantName $tenantName | Out-GridView -Title "Select Your Host Pool" -OutputMode Single).HostPoolName
-
-#remove all users on all app groups
-$AppGroupNames = @()
-$AppGroupNames = Get-RdsAppGroup -TenantName $tenantName -HostPoolName $hostPoolName | %{$AppGroupNames += $_.AppGroupName} 
-foreach ($AppGroupName in $AppGroupNames)
-{
-    #Remove App Group Users
-    $appGroupUsers = @()
-    Get-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName | % {$appGroupUsers += $_.UserPrincipalName}
-    $appGroupUsers | %{  Remove-RdsAppGroupUser -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $AppGroupName -UserPrincipalName $_}  
-}
-
-Get-RdsSessionHost -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsSessionHost -TenantName $_.TenantName -HostPoolName $_.HostPoolName -Name $_.SessionHostName -Verbose -Force}
-Get-RdsAppGroup  -TenantName $tenantName -HostPoolName $hostPoolName | % {Remove-RdsAppGroup -TenantName $_.TenantName -HostPoolName $_.HostPoolName -Name $_.AppGroupName -Verbose}
-
-#if you have apps in you app group
-#$appGroupsToRemove = @()
-#Get-RdsAppGroup -TenantName $tenantName -HostPoolName $hostPoolName <#-Name $newAppGroupName#> | Out-GridView -Title "Select pp groups to delete" -OutputMode Multiple | % { $appGroupsToRemove += $_.AppGroupName}
-#$appGroupsToRemove | % {Get-RdsRemoteApp -TenantName $tenantName -HostPoolName $hostPoolName -AppGroupName $_ | emove-RdsRemoteApp ; Remove-RdsAppGroup -TenantName $tenantName -HostPoolName $hostPoolName -Name $_}
-
-#remove the hostpool
-Remove-RdsHostPool -TenantName $tenantName -Name $hostPoolName -Verbose
-
-#Remove WVD Tenant
-Remove-RdsTenant -TenantName $tenantName
-  
-
-
-```
-
-## 2. Break AAD Sync. Cleanup Users. Delete WVD Apps.
+## 1. Break AAD Sync. Cleanup Users. Delete WVD Apps.
 **RDP into your jumpserver**:  
 ```
 Internet ---RDP---> wvdsdbox-FS-VM1 (Public IP)
 ```  
 and open PowerShell ISE as Administrator and run the code below:   
 ```PowerShell
+#Install Latest Nuget Package Provider
+Install-PackageProvider Nuget -Force -Verbose
+
 Install-Module -Name MSonline -Force
 
 #specify credentials for azure ad connect
@@ -75,8 +31,14 @@ Set-MsolDirSyncEnabled –EnableDirSync $false -Force
 (Get-MSOLCompanyInformation).DirectorySynchronizationEnabled
 
 #remove Synced Accounts from your AAD
-Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force
-Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force
+Get-MsolUser | Where-Object DisplayName -Like "WVDUser*" | Remove-MsolUser -Force 
+Get-MsolUser | Where-Object DisplayName -Like "On-Premises Directory Synchronization Service Account*" | Remove-MsolUser -Force 
+$groups = ("DnsAdmins", "ADSyncPasswordSet", "ADSyncOperators","ADSyncBrowse","ADSyncAdmins","DnsUpdateProxy","WVD Users")
+foreach ($group in $groups)
+{
+    Get-MsolGroup -SearchString $group | Remove-MsolGroup -Force 
+} 
+Get-MsolUser -ReturnDeletedUsers | Remove-MsolUser -RemoveFromRecycleBin -Force
 
 #Remove the service principals for the WVD Enterprise Applications in your AAD
 Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-MsolServicePrincipal -ObjectId $_.ObjectId }
@@ -85,16 +47,32 @@ Get-MsolServicePrincipal | Where-Object DisplayName -Like "Windows Virtual Deskt
 if (!(get-module azuread -ListAvailable)) {Install-Module AzureAD -Force}
 Connect-AzureAD -Credential $MsolCred
 Get-AzureADApplication | Where-Object DisplayName -Like "Windows Virtual Desktop*" | %{Remove-AzureADApplication -ObjectId $_.ObjectId}
-  
+
+#Clear the AAD recycle bin for apps  
+Get-AzureADDeletedApplication -all 1 | ForEach-Object { Remove-AzureADdeletedApplication -ObjectId $_.ObjectId  }  
 
 
 ```
-  
-## 3. Delete Azure Artefacts (e.g. VMs., Network,...)
+
+## 2. Remove WVD Artefacts (Application Groups, Host Pools)
 **Copy & Paste this code into your Cloud Shell**. It will destroy the WVD sandbox RGs containing the all azure artefacts.  
 Saved all your work? Think again. Following code makes no backup ;-)
-
 ```PowerShell
+Install-Module -Name Az.DesktopVirtualization -Force
+
+$hostPools = Get-AzWvdHostPool
+
+foreach ($hostPool in $hostPools)
+{
+	$hostPool.Name
+	$RG = $(Get-AzResource -ResourceType 'Microsoft.DesktopVirtualization/hostpools' -ResourceName $($hostPool.Name)).ResourceGroupName
+	$sessionHosts = Get-AzWvdSessionHost -HostPoolName $hostPool.Name -ResourceGroupName $RG 
+	foreach ($sessionHost in $sessionHosts)
+	{	"removing session host: $(split-path $($sessionHost.Name) -leaf) "
+		Remove-AzWvdSessionHost -ResourceGroupName $RG -HostPoolName $($hostPool.Name) -Name $(split-path $($sessionHost.Name) -leaf) 
+	}
+}
+
 $RGPrefix = "rg-wvdsdbox-"
 $RGSuffixes = @("basics","hostpool-1","hostpool-2","hostpool-3")
 $RGLocation = 'westeurope'   # for alternatives try: 'Get-AzLocation | ft Location'
@@ -114,7 +92,8 @@ $apiURL = "https://bfrankpageviewcounter.azurewebsites.net/api/GetPageViewCount"
 $body = @{URL='wvdsdbox-cleanup'} | ConvertTo-Json
 $webrequest = Invoke-WebRequest -Method Post -Uri $apiURL -Body $body -ContentType 'application/json'
 Write-Output $("URL: '{0}' has been counted: '{1}' times" -f $(($body | ConvertFrom-Json).URL), $webrequest.Content)
-  
+
+Write-Output "done."  
 
 
 ```
