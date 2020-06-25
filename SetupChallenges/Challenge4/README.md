@@ -8,6 +8,8 @@ _**A Host Pool**_: Is a **collection of Session Hosts with identical configurati
 
 **Follow the steps in the WVD** [Tutorial: Create a host pool with the Azure portal](https://docs.microsoft.com/en-us/azure/virtual-desktop/create-host-pools-azure-marketplace) and use the following values:
 
+> **Important**: Beware to hit the **right** create host pool wizard - because there are 2 (Fall release and Spring Release WVD). To hit the right host pool wizard **[Azure Portal] -> Search resources... -> 'Windows Virtual Destop' -> Create a host pool**
+
 | Name | Value |
 |--|--|
 | Resource group | **rg-wvdsdbox-hostpool-1** |
