@@ -25,7 +25,7 @@ have fun.
 - Use **GPU enabled VMs** sizes **for** Host pool VMs to **build a hardware accelerated WVD 3D CAD desktop**. Check out [Configure graphics processing unit (GPU) acceleration for Windows Virtual Desktop](https://docs.microsoft.com/en-us/azure/virtual-desktop/configure-vm-gpu)
 - **[Implement FSLogix Application Masking](https://docs.microsoft.com/en-us/fslogix/implement-application-masking-tutorial)**
 - **Automate the deployment** using [PowerShell](https://docs.microsoft.com/en-us/azure/virtual-desktop/powershell-module) and/or ARM
-- **Test printing** in WVD desktop (e.g. HTML5 session, Remote Desktop Session) or tryout 3rd party printing solutions [see WVD Partners](https://docs.microsoft.com/en-us/azure/virtual-desktop/partners) 
+- **Test printing** in WVD desktop (e.g. HTML5 session, Remote Desktop Session) or tryout e.g. [Universal Print](https://docs.microsoft.com/en-us/universal-print/fundamentals/universal-print-whatis) or any other 3rd party printing solutions [see WVD Partners](https://docs.microsoft.com/en-us/azure/virtual-desktop/partners) 
 - Analyze cost / usage with Azure Cost 
 - ... 
 
