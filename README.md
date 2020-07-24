@@ -7,7 +7,7 @@ _...**you build** (guided) the sandbox **in your subscription**._
 
 **Facts**: 
 * This is self-paced learning.
-* Latest successful run: **18.06.2020**
+* Latest successful run: **20.07.2020**
 * **Duration**: i.e. Time to WVD sandbox = **1h 50min**
 * WVD version: **works** with the current **WVD Spring Update**
 * Automation done using PowerShell, Azure ARM Templates, Azure VM Custom Script Extensions  -> all stored in the BaseSetupArtefacts folder
