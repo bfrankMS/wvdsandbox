@@ -63,7 +63,7 @@ Set-ItemProperty -Path $ieESCUserPath -Name IsInstalled -Value $ieESCAdminEnable
 
         Set-ADAccountPassword -Identity:$user.DistinguishedName -NewPassword:$Password -Reset:$true 
         Set-ADObject -Identity:$user.DistinguishedName -Replace:@{"userAccountControl"="512"}   #enable account
-        Set-ADUser -ChangePasswordAtLogon:$false -Identity:$user.DistinguishedName
+        Set-ADUser -ChangePasswordAtLogon:$false -Identity:$user.DistinguishedName -PasswordNeverExpires:$true 
     }
 
 

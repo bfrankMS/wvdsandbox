@@ -22,7 +22,7 @@ So ride at your own risk and please use your brain ;-)
 **Windows Virtual Desktop provides you access to a Windows desktop** where you need it (via https) on a large variety of devices (e.g. PC, Mac, Android, iPhone, linux thin clients)
 The **desktops are spun up in your subscription** and controlled by you (vm size, capabilities, applications, work hours). **Backend services** (e.g. load balancing) **are managed by Microsoft**.  
 This is **the architecture you will get** when deploying the WVD sandbox:  
-![Simple WVD Sandbox](FinalArchitecture.png)  
+![Simple WVD Sandbox](./FinalArchitecture.png)  
 
   
 **Explanation:**
@@ -32,23 +32,25 @@ This is **the architecture you will get** when deploying the WVD sandbox:
 * After that users e.g. WVDUser1@_yourAADdomain_.onmicrosoft.com can then **use e.g. the web portal to connect to** his workspace: application or **desktop**. 
 
 ## The WVD Sandbox Setup  
-- [**Challenge 1: A foreword: Or single subscription deployment vs. split subscription deployment**](/SetupChallenges/Challenge1/README.md)  
+- [**Challenge 1: A foreword: Or single subscription deployment vs. split subscription deployment**](./SetupChallenges/Challenge1/README.md)  
 Some reading about the prerequisites - screenshots of the result - when it makes sense to do a split subscription setup of WVD.
-- [**Challenge 2: Setup Basics** i.e. Network, Domain Contoso And Member File Server](/SetupChallenges/Challenge2/README.md)  
+- [**Challenge 2: Setup Basics** i.e. Network, Domain Contoso And Member File Server](./SetupChallenges/Challenge2/README.md)  
 This will do the work of setting up the base requirements - it contains powershell code that'll deploy vms to your subscription.
-- [**Challenge 3: Do AAD Sync** using AD Connect](/SetupChallenges/Challenge3/README.md)  
+- [**Challenge 3: Do AAD Sync** using AD Connect](./SetupChallenges/Challenge3/README.md)  
 A screenshot story to guides you through the process of syncing user accounts in Active Directory for use with Azure Active Directory.
-- [**Challenge 4: Create A WVD Host Pool** ](/SetupChallenges/Challenge4/README.md)
+- [**Challenge 4: Create A WVD Host Pool** ](./SetupChallenges/Challenge4/README.md)
 Here you will create the desktops a user can connect to.
-- [**Challenge 5: Enable Remote Desktop Access** For Users](/SetupChallenges/Challenge5/README.md)
+- [**Challenge 5: Enable Remote Desktop Access** For Users](./SetupChallenges/Challenge5/README.md)
 Configure access to a desktop for a group of users.
-- [**Challenge 6: Test Remote Desktop Access** With A User Via the Web Portal](/SetupChallenges/Challenge6/README.md)
+- [**Challenge 6: Test Remote Desktop Access** With A User Via the Web Portal](./SetupChallenges/Challenge6/README.md)
 Hopefully your WVD sandbox does work... :-)
-- [**Challenge X: What's next?**](/SetupChallenges/ChallengeX/README.md)
+- [**Challenge X: What's next?**](./SetupChallenges/ChallengeX/README.md)
 Ideas for you what to do next.
+- **ExtraChallenges:**
+    - [**Use Azure Files with AD Auth for FSLogix Profile Redirection.**](./XtraChallenges/AzureFilesWithAdAuth4FSLogix/README.md)
 
 ## Want to delete the wvd sandbox?  
-[Please go here for the cleanup routine](/CleanupChallenge/README.md)
+[Please go here for the cleanup routine](./CleanupChallenge/README.md)
 
 ## Link List
 - Christiaan's massive [WVD 2020 spring update...deployment walkthrough](https://christiaanbrinkhoff.com/2020/05/01/windows-virtual-desktop-technical-2020-spring-update-arm-based-model-deployment-walkthrough/)
