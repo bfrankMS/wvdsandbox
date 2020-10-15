@@ -47,7 +47,7 @@ Hopefully your WVD sandbox does work... :-)
 - [**Challenge X: What's next?**](./SetupChallenges/ChallengeX/README.md)
 Ideas for you what to do next.
 - **ExtraChallenges:**
-    - [**Use Azure Files with AD Auth for FSLogix Profile Redirection.**](../XtraChallenges/AzureFilesWithAdAuth4FSLogix/README.md)
+    - [**Use Azure Files with AD Auth for FSLogix Profile Redirection.**](./XtraChallenges/AzureFilesWithAdAuth4FSLogix/README.md)
 
 ## Want to delete the wvd sandbox?  
 [Please go here for the cleanup routine](./CleanupChallenge/README.md)
