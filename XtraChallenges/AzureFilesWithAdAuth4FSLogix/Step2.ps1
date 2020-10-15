@@ -1,6 +1,6 @@
 ﻿<#
     purpose: This will configure Azure files in your subscription for AD auth.
-    run this on: domain member server with AD PowerShell tools installed.
+    run this on: domain member server
     by bfrank
     reference: https://docs.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-active-directory-enable
 #>
@@ -11,15 +11,30 @@ Connect-AzAccount
 #Select the target subscription for the current session
 $subscription = Get-AzSubscription | Out-GridView -Title "Select the right subscription" -OutputMode Single | Select-AzSubscription
 
+#Create Azure File share on a premium storage account as FSLogix profile path
+$resourceGroup = Get-AzResourceGroup | Out-GridView -Title 'Select the target resource group for the profiles storage account' -OutputMode Single 
+$storageAccount = New-AzStorageAccount -ResourceGroupName $resourceGroup.ResourceGroupName `
+ -Name "wvdprofiles$(Get-Random -Minimum 1000 -Maximum 9999)" `
+ -SkuName "Premium_LRS" `
+ -Location $resourceGroup.Location `
+ -Kind "FileStorage"
+
+$fileShareName = "wvdprofiles"
+#create share and set quota
+$share = New-AzStorageShare -Name $fileShareName -Context $storageAccount.Context 
+#Set-AzStorageShareQuota -ShareName $($share.Name) -Quota 100 -Context $share.Context
+
+(Get-AzStorageShare -Name $share.Name -Context $share.Context).ShareProperties
+
 #Define parameters
 $SubscriptionId = $subscription.Subscription.Id
-$StorageAccount = Get-AzResource -ResourceType 'Microsoft.Storage/storageAccounts' |  Out-GridView -Title "Select the right storage account" -OutputMode Single
-$ResourceGroupName = $StorageAccount.ResourceGroupName
-$StorageAccountName = $StorageAccount.Name
+#$storageAccount = Get-AzResource -ResourceType 'Microsoft.Storage/storageAccounts' |  Out-GridView -Title "Select the right storage account" -OutputMode Single
+$ResourceGroupName = $storageAccount.ResourceGroupName
+$StorageAccountName = $storageAccount.StorageAccountName
 $OUName = "WVD"
-$DomainName = "contoso.local"
+$DomainName = $env:USERDNSDOMAIN
 #$ExternalDomainName = "wvdsandbox.net"
-$fileShareName = "wvdprofiles"
+
 
 # Register the target storage account with your active directory environment under the target OU (for example: specify the OU with Name as "UserAccounts" or DistinguishedName as "OU=UserAccounts,DC=CONTOSO,DC=COM"). 
 # You can use to this PowerShell cmdlet: Get-ADOrganizationalUnit to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify the target OU.
@@ -31,8 +46,7 @@ Import-Module -Name AzFilesHybrid -Force
 
 #use service account -> will create an account in AD
 #BTW (computer account ist not recommended) 
-join-AzStorageAccountForAuth -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -DomainAccountType ServiceLogonAccount -OrganizationalUnitName $OUName -Domain $DomainName -OverwriteExistingADObject
-
+Join-AzStorageAccountForAuth -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -DomainAccountType ComputerAccount -OrganizationalUnitName $OUName -Domain $DomainName -OverwriteExistingADObject
 
 #check
 $storageaccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
@@ -56,28 +70,19 @@ Set-AzStorageAccount -ResourceGroupName "$ResourceGroupName"  `
 -ActiveDirectoryDomainSid "............." `
 -ActiveDirectoryAzureStorageSid ".........." 
 
-
 #You can run the Debug-AzStorageAccountAuth cmdlet to conduct a set of basic checks on your AD configuration with the logged on AD user. This cmdlet is supported on AzFilesHybrid v0.1.2+ version. For more details on the checks performed in this cmdlet, see Azure Files Windows troubleshooting guide.
 Debug-AzStorageAccountAuth -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -Verbose
 #>
 
-#Create a fileshare in this storage account
-$ctx = $StorageAccount.Context
-
-#create a file share on the storage account
-New-AzStorageShare -Context $ctx -Name $fileShareName
 
 #Now we will set the AD permissions on the storage account
 # sort of equivalent as the 'Share permissions' in old onpremise times.
 $FileShareContributorRole = Get-AzRoleDefinition "Storage File Data SMB Share Contributor" 
 #Use one of the built-in roles: Storage File Data SMB Share Reader, Storage File Data SMB Share Contributor, Storage File Data SMB Share Elevated Contributor
 $scope = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Storage/storageAccounts/$StorageAccountName/fileServices/default/fileshares/$fileShareName"
-#Example:  $scope = "/subscriptions/17ccdc9c-d283-486e-b5ec-8ec8b11da539/resourceGroups/rg-cEUAPResources/providers/Microsoft.Storage/storageAccounts/awcfsxprofiles/fileServices/default/fileshares/profiles"
 
 $wvdusers = Get-AzADGroup -DisplayName "WVD Users"
 New-AzRoleAssignment -ObjectId $wvdusers.Id -RoleDefinitionName $FileShareContributorRole.Name -Scope $scope
-#New-AzRoleAssignment -SignInName "wvduser1" -RoleDefinitionName $FileShareContributorRole.Name -Scope $scope
-
 
 #mount the drive using the storage account key. then apply NTFS permissions 
 $ackey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $StorageAccountName)[0].Value 
@@ -96,13 +101,13 @@ else {
 }
 
 
-#1st remove all permissions.
+#1st remove all exiting permissions.
 $acl = Get-Acl z:\
 $acl.Access | % { $acl.RemoveAccessRule($_) }
 $acl.SetAccessRuleProtection($true, $false)
 $acl | Set-Acl
 #add full control for 'the usual suspects'
-$users = @("$DomainName\Domain Admins", "System", "Administrators" )
+$users = @("$DomainName\Domain Admins", "System", "Administrators", "Creator Owner" )
 foreach ($user in $users) {
     $new = $user, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow"
     $accessRule = new-object System.Security.AccessControl.FileSystemAccessRule $new

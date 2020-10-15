@@ -7,19 +7,28 @@
 
 #downloading FSLogix.
 Write-Output "downloading fslogix"
-mkdir c:\temp\ -Force
-Invoke-WebRequest -Uri "https://aka.ms/fslogix_download" -OutFile "c:\temp\FSLogix.zip" 
 
-Expand-Archive c:\temp\FSLogix.zip -DestinationPath c:\temp\FSLogix
+$destinationPath = "$env:HOMEPATH\Downloads\FSLogix.zip"
+$tempPath = "$env:TEMP\FSLogix"
+Invoke-WebRequest -Uri "https://aka.ms/fslogix_download" -OutFile $destinationPath 
+
+Expand-Archive $destinationPath -DestinationPath $tempPath -Force
 
 #installing FSLogix
 Write-Output "installing fslogix"
-Start-Process -FilePath "c:\temp\FSLogix\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet" -Wait
+Start-Process -FilePath "$tempPath\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet" -Wait
+
+#add administrator / domain admins to fslogix exclude local group
 
 #configuring FSLogix
 Write-Output "writing fslogix keys"
 Set-Location HKLM:\Software\FSLogix
 New-Item HKLM:\SOFTWARE\FSLogix\Profiles
+
+# e.g.[Azure Portal] -> Resource Groups 'rg-wvdsdbox-basics' -> "wvdprofilesXXXX"
+$storageAccountName =  Read-Host -Prompt "Please enter the name of the storage account that contains the wvdprofiles (e.g. 'wvdprofiles0815')"
+$fileShareName = "wvdprofiles"
+
 $FSLogixRegKeys = @{
     Enabled                              = 
     @{
@@ -29,7 +38,7 @@ $FSLogixRegKeys = @{
     VHDLocations                         = 
     @{
         Type  = "MultiString"
-        Value = "\\sawvdsdboxprofiles.file.core.windows.net\wvdprofiles"
+        Value = "\\$storageAccountName.file.core.windows.net\$fileShareName"
     }
     DeleteLocalProfileWhenVHDShouldApply =
     @{
@@ -82,8 +91,8 @@ $excludeList = @"
 %TEMP%\*.VHDX,
 %Windir%\TEMP\*.VHD,
 %Windir%\TEMP\*.VHDX,
-\\sawvdsdboxprofiles.file.core.windows.net\wvdprofiles\*\*.VHD,
-\\sawvdsdboxprofiles.file.core.windows.net\wvdprofiles\*\*.VHDX
+\\$storageAccountName.file.core.windows.net\$fileShareName\*\*.VHD,
+\\$storageAccountName.file.core.windows.net\$fileShareName\*\*.VHDX
 "@
 foreach ($item in $excludeList) {
     Add-MpPreference -ExclusionPath $item 
