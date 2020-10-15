@@ -1,4 +1,4 @@
-# Challenge: Use Azure Files with AD Auth for FSLogix Profile Redirection.
+# Challenge X: Use Azure Files with AD Auth for FSLogix Profile Redirection.
 
 [back](../../README.md)
 

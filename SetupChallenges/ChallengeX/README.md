@@ -15,7 +15,10 @@ have fun.
     - [macOS client](https://docs.microsoft.com/en-us/azure/virtual-desktop/connect-macos)
     - [iOs client](https://docs.microsoft.com/en-us/azure/virtual-desktop/connect-ios)
 3. **[Create an custom Windows 10 multi-session image](https://christiaanbrinkhoff.com/2020/05/01/windows-virtual-desktop-technical-2020-spring-update-arm-based-model-deployment-walkthrough/#CreateacustomWindows10multi-session-AzureManagedimage)**. e.g. install: applications, language packs, change keyboard layout, time zone,...
-4. [**Add FSLogix Profile Container** as a profile delivery solution](https://christiaanbrinkhoff.com/2020/05/01/windows-virtual-desktop-technical-2020-spring-update-arm-based-model-deployment-walkthrough/#AddFSLogixProfileContainerasprofiledeliverysolution) = **user profile folder redirection**. See also [Tutorial: Configure Profile Container to redirect User Profiles](https://docs.microsoft.com/en-us/fslogix/configure-profile-container-tutorial)
+4. Add **FSLogix Profile Container** as a profile delivery solution:
+    - see the my [Use Azure Files with AD Auth for FSLogix Profile Redirection.](../../XtraChallenges/AzureFilesWithAdAuth4FSLogix/README.md)
+    - check out [Christian Brinkhoff's ... FSLogix Profile Container as a profile delivery solution](https://christiaanbrinkhoff.com/2020/05/01/windows-virtual-desktop-technical-2020-spring-update-arm-based-model-deployment-walkthrough/#AddFSLogixProfileContainerasprofiledeliverysolution)
+    - See also [Tutorial: Configure Profile Container to redirect User Profiles](https://docs.microsoft.com/en-us/fslogix/configure-profile-container-tutorial)
 5. [**Enable Azure Multi-Factor Auth**entication for Windows Virtual Desktop](https://docs.microsoft.com/en-us/azure/virtual-desktop/set-up-mfa)
 6. **Configure WVD Monitoring** as you [Use Log Analytics for the diagnostics feature](https://docs.microsoft.com/en-us/azure/virtual-desktop/diagnostics-log-analytics)
 7. Implement **3rd party tools from sepago** (Monitoring, autoscale, User self service, Azure Admin for WVD) - go [here](https://www.sepago.de/en/wvd-value-add-tools/)
