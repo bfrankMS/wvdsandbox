@@ -27,7 +27,8 @@ $destinationPath = "$env:HOMEPATH\Downloads\AzFilesHybrid.zip"
 $tempPath = "$env:TEMP\AzFilesHybrid"
 #download module AzFilesHybrid.zip from 
 # https://github.com/Azure-Samples/azure-files-samples/releases
-Invoke-WebRequest -Uri 'https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.2/AzFilesHybrid.zip' -OutFile $destinationPath
+#Invoke-WebRequest -Uri 'https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.2/AzFilesHybrid.zip' -OutFile $destinationPath
+Invoke-WebRequest -Uri 'https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.7/AzFilesHybrid.zip' -OutFile $destinationPath
 
 #unzip it
 Expand-Archive $destinationPath -DestinationPath $tempPath
